@@ -13,7 +13,8 @@ mysql2pgsqlcmd() {
 
 download() {
      echo "Downloading $1"
-     wget --quiet --no-clobber --tries=3 "$1"
+     header='--header=User-Agent:Osm-search-Bot/1(https://github.com/osm-search/wikipedia-wikidata)'
+     wget --quiet --no-clobber "$header" --tries=3 "$1" 
 }
 
 
