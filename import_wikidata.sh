@@ -19,19 +19,6 @@ readarray -t LANGUAGES < languages.txt
 
 
 
-echo "====================================================================="
-echo "Download wikidata dump tables"
-echo "====================================================================="
-
-# 114M  wikidatawiki-latest-geo_tags.sql.gz
-# 1.7G  wikidatawiki-latest-page.sql.gz
-# 1.2G  wikidatawiki-latest-wb_items_per_site.sql.gz
-download https://dumps.wikimedia.org/wikidatawiki/latest/wikidatawiki-latest-geo_tags.sql.gz
-download https://dumps.wikimedia.org/wikidatawiki/latest/wikidatawiki-latest-page.sql.gz
-download https://dumps.wikimedia.org/wikidatawiki/latest/wikidatawiki-latest-wb_items_per_site.sql.gz
-
-
-
 
 echo "====================================================================="
 echo "Import wikidata dump tables"
@@ -49,23 +36,6 @@ gzip -dc wikidatawiki-latest-wb_items_per_site.sql.gz | mysql2pgsqlcmd | psqlcmd
 
 
 
-
-
-echo "====================================================================="
-echo "Get wikidata places from wikidata query API"
-echo "====================================================================="
-
-echo "Number of place types:"
-wc -l wikidata_place_types.txt
-
-while read F  ; do
-    echo "Querying for place type $F..."
-    wget --quiet "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=SELECT ?item WHERE{?item wdt:P31*/wdt:P279*wd:$F;}" -O $F.json
-    jq -r '.results | .[] | .[] | [.item.value] | @csv' $F.json >> $F.txt
-    awk -v qid=$F '{print $0 ","qid}' $F.txt | sed -e 's!"http://www.wikidata.org/entity/!!' | sed 's/"//g' >> $F.csv
-    cat $F.csv >> wikidata_place_dump.csv
-    rm $F.json $F.txt $F.csv
-done < wikidata_place_types.txt
 
 
 
