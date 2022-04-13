@@ -4,6 +4,22 @@ OSM contributors frequently tag items with links to Wikipedia and Wikidata. Nomi
 
 These scripts extract and prepare both Wikipedia page rank and Wikidata links for use in Nominatim.  
 
+
+---
+Final tables
+---
+
+Collected information by both scripts will be stored in 2 (3, actually) postgreSQL tables: wikipedia_redirect and wikipedia_article, the latter being the bigger one. Both are used then in Nominatim, with most of the computing already done. 
+
+#### Wikipedia_article
+
+Besides the relevant information of each article, each row of wikipedia_article also has multiple information about the count (to get the importance) and specifies the language itself. To use with Nominatim, we are most interested the following columns:
+
+|Column|Type|Nulable(?)|Example|
+|-|-|-|-|
+|language|text|No|fr
+|title|text|No|Great Pyramid of Giza|
+
 #### Create a new postgres DB for Processing
 
 Due to the size of initial and intermediate tables, processing can be done in an external database:
@@ -56,7 +72,7 @@ To download, convert, and import the data, then process required items, run:
 ``` 
 ./import_wikidata.sh
 ```
-
+#### 
 
 License
 -------
