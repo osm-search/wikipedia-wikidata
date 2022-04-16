@@ -37,4 +37,3 @@ uk
 vi
 war
 zh
-tr
