@@ -1,195 +1,307 @@
-Q9842
-Q9430
-Q928830
-Q9259
-Q91028
-Q8514
-Q8502
-Q83405
-Q82794
-Q820477
-Q811979
-Q8072
-Q79007
-Q786014
-Q75848
-Q75520
-Q728937
-Q7275
-Q719456
-Q7075
-Q697295
-Q6852233
-Q682943
-Q665487
-Q655686
-Q643589
-Q641226
-Q631305
-Q6256
-Q6023295
-Q5773747
-Q56061
-Q55659167
-Q55488
-Q55465477
-Q54050
-Q532
-Q53060
-Q52177058
-Q515716
-Q5153984
-Q515
-Q5144960
-Q5119
-Q5107
-Q5084
-Q5031071
-Q5003624
-Q4989906
-Q4976993
-Q486972
-Q483110
-Q4830453
-Q47521
-Q473972
-Q46831
-Q46614560
-Q44782
-Q44613
-Q44539
-Q44494
-Q44377
-Q4421
-Q43501
-Q4286337
-Q42523
-Q41176
-Q40357
-Q4022
-Q40080
-Q39816
-Q39715
-Q39614
-Q3957
-Q3947
-Q3914
-Q38723
-Q38720
-Q3623867
-Q35666
-Q355304
-Q35509
-Q35112127
-Q34985575
-Q34876
-Q34763
-Q34627
-Q3455524
-Q34442
-Q33837
-Q33506
-Q32815
-Q3257686
-Q3240715
-Q3191695
-Q3153117
-Q30198
-Q30139652
-Q294422
-Q2870166
-Q27686
-Q274153
-Q271669
-Q2659904
-Q24529780
-Q24354
-Q2354973
-Q23442
-Q23413
-Q23397
-Q2327515
-Q2311958
-Q22927291
-Q22698
-Q2175765
-Q205495
-Q204832
-Q2042028
-Q202216
-Q1970725
-Q194203
-Q194195
-Q190429
-Q185187
-Q185113
-Q183366
-Q1799794
-Q1788454
-Q1785071
-Q1777138
-Q177634
-Q177380
-Q174814
-Q174782
-Q17350442
-Q17343829
-Q17334923
-Q17018380
-Q16970
-Q16917
-Q16831714
-Q165
-Q160742
-Q159719
-Q159334
-Q15640612
-Q15324
-Q15284
-Q15243209
-Q152081
-Q15195406
-Q1500350
-Q149621
-Q14757767
-Q14350
-Q1410668
-Q1394476
-Q1377575
-Q1353183
-Q134447
-Q133215
-Q133056
-Q13221722
-Q13220204
-Q1311958
-Q1303167
-Q130003
-Q12518
-Q12516
-Q1248784
-Q123705
-Q12323
-Q12284
-Q12280
-Q121359
-Q1210950
-Q11755880
-Q11707
-Q11315
-Q11303
-Q1115575
-Q1107656
-Q10864048
-Q1076486
-Q105731
-Q105190
-Q1048525
-Q102496
-Q28872924
-Q15617994
-Q159313
-Q24398318
-Q327333
-Q43229
-Q860861
+Q9842;primary school
+Q149566;middle school
+Q9430;ocean
+Q928830;metro station
+Q9259;UNESCO World Heritage Site
+Q91028;administrative arrondissement of Belgium
+Q8514;desert
+Q8502;mountain
+Q15324;body of water
+Q28575;county
+Q39816;valley
+Q46831;mountain range
+Q50337;prefecture of Japan
+Q175185;rural area
+Q191086;jungle
+Q205895;landmass
+Q207520;region of Japan
+Q369639;region of Norway
+Q15284;municipality
+Q123705;neighborhood
+Q161387;kibbutz
+Q188509;suburb
+Q200250;metropolis
+Q245016;military base
+Q253019;Ortsteil
+Q269528;unincorporated area
+Q329245;basic unit of settlement in the Czech Republic
+Q484170;commune of France
+Q498162;census-designated place
+Q509028;ranch
+Q582706;Israeli settlement
+Q587144;census town
+Q618299;settlement
+Q622499;refugee camp
+Q627236;company town
+Q674950;residential area
+Q702492;urban area
+Q790344;district of Barcelona
+Q815324;town municipality of Turkey
+Q820254;mining community
+Q1074523;planned community
+Q1175522;County city (council system)
+Q1198413;military camp
+Q1288520;local council in Israel
+Q1294703;shanty town
+Q1326028;camp
+Q1348006;city block
+Q1372205;dispersed settlement
+Q1394476;civil township
+Q1426493;trailer park
+Q1501046;community settlement
+Q1529096;village in Turkey
+Q1907114;metropolitan area
+Q2755753;area of London
+Q2989398;commune of Algeria
+Q3172900;colony
+Q3257686;locality
+Q3477348;urban area
+Q3559019;urban village
+Q4313794;populated place in Georgia
+Q4373615;colony of the Russian empire
+Q4632675;dwelling place
+Q4668360;Aboriginal community in Western Australia
+Q4845841;settlement (Croatia)
+Q5148433;Colonias of Mexico City
+Q5195043;borough
+Q7930989;city/town
+Q10354598;rural settlement
+Q10840661;urban area of Vietnam
+Q12051488;populated place in Ukraine
+Q12063697;neighborhood of Washington, D.C.
+Q16480895;hamlet
+Q24258416;railway station
+Q26714626;large village
+Q27062006;station
+Q27554677;former capital
+Q108775530;proposed human settlement
+Q855697;subcontinent
+Q1029013;Megaregions of the United States
+Q1200957;tourist destination
+Q1666245;region of China
+Q1970725;natural region
+Q2140699;wine-producing region
+Q3744088;tourism region
+Q30059;arrondissement
+Q52105;habitat
+Q107425;landscape
+Q171809;county of England
+Q356936;exclusion zone
+Q453909;built-up area
+Q518261;cultural area
+Q1062177;capital region
+Q1081138;historic site
+Q1092661;moorland
+Q1133961;commercial district
+Q1185892;geological massif
+Q1248049;Land
+Q1286517;natural landscape
+Q1389310;waterbody
+Q1662024;industrial district
+Q1742059;lake area
+Q1852859;populated place in the Netherlands
+Q2063507;recreation area
+Q3241565;woodland
+Q10594991;nature area
+Q16363669;sports park
+Q17350442;venue
+Q27995042;wilderness area
+Q55726155;financial district
+Q99323582;quarter or sector of Monaco
+Q820477;mine
+Q12323;dam
+Q12493;dome
+Q27686;hotel
+Q39614;cemetery
+Q54831;amphitheatre
+Q62447;aerodrome
+Q62832;observatory
+Q83405;factory
+Q199451;pagoda
+Q483110;stadium
+Q483453;fountain
+Q587682;oil well
+Q653208;monolith
+Q671224;data center
+Q697295;shrine
+Q699405;residence
+Q1076486;sports venue
+Q4260475;medical facility
+Q4989906;monument
+Q5327174;earth structure
+Q6017969;scenic viewpoint
+Q6640302;commercial center
+Q10373565;waterworks
+Q12146012;underground building
+Q12292478;estate
+Q15090615;arts venue
+Q29845814;trolleybus depot
+Q47520309;recycling facility
+Q50418254;outdoor concert venue
+Q55713852;resthouse
+Q56240808;oil rig
+Q8072;volcano
+Q79007;street
+Q786014;rest area
+Q75848;gated community
+Q75520;plateau
+Q728937;railway line
+Q7275;state
+Q719456;station
+Q7075;library
+Q6852233;military building
+Q682943;cricket field
+Q665487;diocese
+Q655686;commercial building
+Q643589;department
+Q641226;arena
+Q631305;rock formation
+Q6256;country
+Q6023295;funerary structure
+Q5773747;historic house
+Q55659167;natural watercourse
+Q55488;railway station
+Q54050;hill
+Q532;village
+Q53060;gate
+Q52177058;civic building
+Q515716;prefecture
+Q5153984;commune-level subdivision of Vietnam
+Q515;city
+Q5144960;microregion
+Q5119;capital
+Q5107;continent
+Q5084;hamlet
+Q5031071;canal tunnel
+Q5003624;memorial
+Q4976993;civil parish
+Q4830453;business
+Q47521;stream
+Q473972;protected area
+Q46614560;deanery (building)
+Q44782;port
+Q44613;monastery
+Q44539;temple
+Q44494;mill
+Q44377;tunnel
+Q4421;forest
+Q43501;zoo
+Q4286337;city district
+Q42523;atoll
+Q40357;prison
+Q4022;river
+Q40080;beach
+Q39715;lighthouse
+Q3957;town
+Q3947;house
+Q38723;higher education institution
+Q38720;windmill
+Q3623867;arrondissement of Benin
+Q35666;glacier
+Q355304;watercourse
+Q35509;cave
+Q35112127;historic building
+Q34985575;city district
+Q34876;province
+Q34763;peninsula
+Q34627;synagogue
+Q3455524;administrative region
+Q34442;road
+Q33837;archipelago
+Q33506;museum
+Q24699794;museum building
+Q32815;mosque
+Q3240715;crater
+Q3191695;regency of Indonesia
+Q3153117;intercommunality
+Q30198;marsh
+Q30139652;health care structure
+Q294422;public building
+Q2870166;water ride
+Q274153;water tower
+Q271669;landform
+Q2659904;government organization
+Q24529780;point
+Q24354;theater
+Q2354973;road tunnel
+Q23442;island
+Q23413;castle
+Q23397;lake
+Q2327515;city district of Baden-Württemberg
+Q2311958;canton
+Q22927291;sixth-level administrative country subdivision
+Q22698;park
+Q2175765;tram stop
+Q205495;petrol station
+Q204832;roller coaster
+Q2042028;ravine
+Q202216;overseas department and region of France
+Q194203;arrondissement of France
+Q194195;amusement park
+Q185187;watermill
+Q185113;cape
+Q1799794;administrative territorial entity of a specific level
+Q1788454;road junction
+Q1785071;fort
+Q1777138;race track
+Q177380;hot spring
+Q174814;electrical substation
+Q174782;square
+Q17343829;unincorporated community in the United States
+Q17018380;bight
+Q16970;church building
+Q16917;hospital
+Q39364723;hospital building
+Q16831714;government building
+Q165;sea
+Q160742;abbey
+Q159719;power station
+Q159334;secondary school
+Q15640612;fifth-level administrative country subdivision
+Q15243209;historic district
+Q152081;concentration camp
+Q15195406;city district in Russia
+Q1500350;township of the People's Republic of China
+Q149621;district
+Q14757767;fourth-level administrative country subdivision
+Q14350;radio station
+Q1410668;National Wildlife Refuge
+Q1377575;wildlife refuge
+Q1353183;launch pad
+Q134447;nuclear power plant
+Q133215;casino
+Q133056;mountain pass
+Q13221722;third-level administrative country subdivision
+Q13220204;second-level administrative country subdivision
+Q1311958;railway tunnel
+Q1303167;barn
+Q130003;ski resort
+Q12518;tower
+Q489357;farmhouse
+Q12516;pyramid
+Q1248784;airport
+Q12284;canal
+Q12280;bridge
+Q121359;infrastructure
+Q1210950;channel
+Q11755880;residential building
+Q11707;restaurant
+Q11315;shopping center
+Q11303;skyscraper
+Q1115575;civil parish
+Q1107656;garden
+Q10864048;first-level administrative country subdivision
+Q105731;lock
+Q105190;levee
+Q1048525;golf course
+Q102496;parish
+Q28872924;designation for an administrative territorial entity of a single country
+Q15617994;designation for an administrative territorial entity
+Q159313;urban agglomeration
+Q24398318;religious building
+Q327333;government agency
+Q860861;sculpture
+Q46395;British overseas territories
+Q103910131;part of city or town or population centre
+Q103910177;city or town or population centre
+Q103910453;village or neigbourhood
