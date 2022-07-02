@@ -1,14 +1,15 @@
 #!/bin/bash
 
-
-if [[ !$BUILDID ]]; then
-    BUILDID=latest
-fi
+# set defaults
+: ${BUILDID:=latest}
+: ${DATABASE_NAME:=wikiprocessingdb}
+: ${LANGUAGES:=bar,cy}
+LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
 DOWNLOADED_PATH="$BUILDID/downloaded"
 
 psqlcmd() {
-     psql --quiet wikiprocessingdb |& \
+     psql --quiet $DATABASE_NAME |& \
      grep -v 'does not exist, skipping' |& \
      grep -v 'violates check constraint' |& \
      grep -vi 'Failing row contains'
@@ -18,10 +19,6 @@ mysql2pgsqlcmd() {
      ./bin/mysql2pgsql.perl --nodrop /dev/stdin /dev/stdout
 }
 
-
-# languages to process (refer to List of Wikipedias here: https://en.wikipedia.org/wiki/List_of_Wikipedias)
-# requires Bash 4.0
-readarray -t LANGUAGES < languages.txt
 
 
 
@@ -34,7 +31,7 @@ echo "====================================================================="
 echo "Import individual wikipedia language tables"
 echo "====================================================================="
 
-for LANG in "${LANGUAGES[@]}"
+for LANG in "${LANGUAGES_ARRAY[@]}"
 do
     echo "Import language: $LANG"
 

@@ -8,17 +8,17 @@
 ./install_dependencies.sh
 
 export BUILDID=wiki_build_202207
+export LANGUAGES=$(grep -v '^#' languages.txt | tr "\n" ",")
 
-
-./download_wikipedia.sh
-./download_wikidata.sh
-./download_wikidata_placetypes.sh
+./steps/wikipedia_download.sh
+./steps/wikidata_download.sh
+./steps/wikidata_api_fetch_placetypes.sh
 
 # dropdb wikiprocessingdb
-./import_wikipedia.sh
-./import_wikidata.sh
+./steps/wikipedia_import.sh
+./steps/wikidata_import.sh
 
-./process_wikipedia.sh
-./process_wikidata.sh
+./steps/wikipedia_process.sh
+./steps/wikidata_process.sh
 
-./cleanup.sh
+./steps/cleanup.sh

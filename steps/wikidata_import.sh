@@ -1,13 +1,13 @@
 #!/bin/bash
 
-if [[ !$BUILDID ]]; then
-    BUILDID=latest
-fi
+# set defaults
+: ${BUILDID:=latest}
+: ${DATABASE_NAME:=wikiprocessingdb}
 
 DOWNLOADED_PATH="$BUILDID/downloaded"
 
 psqlcmd() {
-     psql --quiet wikiprocessingdb
+     psql --quiet $DATABASE_NAME
 }
 
 mysql2pgsqlcmd() {

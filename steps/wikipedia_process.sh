@@ -1,11 +1,14 @@
 #!/bin/bash
 
-# languages to process (refer to List of Wikipedias here: https://en.wikipedia.org/wiki/List_of_Wikipedias)
-# requires Bash 4.0
-readarray -t LANGUAGES < languages.txt
+# set defaults
+: ${BUILDID:=latest}
+: ${DATABASE_NAME:=wikiprocessingdb}
+: ${LANGUAGES:=bar,cy}
+LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
+
 
 psqlcmd() {
-     psql --quiet wikiprocessingdb
+     psql --quiet $DATABASE_NAME
 }
 
 echo "====================================================================="
@@ -47,7 +50,7 @@ echo "Process language tables and associated pagelink counts"
 echo "====================================================================="
 
 
-for i in "${LANGUAGES[@]}"
+for i in "${LANGUAGES_ARRAY[@]}"
 do
     echo "Language: $i"
 
@@ -83,9 +86,9 @@ do
 done
 
 
-for i in "${LANGUAGES[@]}"
+for i in "${LANGUAGES_ARRAY[@]}"
 do
-    for j in "${LANGUAGES[@]}"
+    for j in "${LANGUAGES_ARRAY[@]}"
     do
         echo "UPDATE ${i}pagelinkcount
               SET othercount = ${i}pagelinkcount.othercount + x.count

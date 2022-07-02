@@ -4,19 +4,15 @@ echo "====================================================================="
 echo "Download wikidata dump tables"
 echo "====================================================================="
 
-if [[ !$BUILDID ]]; then
-    BUILDID=latest
-fi
-
+# set defaults
+: ${BUILDID:=latest}
 # List of mirrors https://dumps.wikimedia.org/mirrors.html
-# Download using main server: 150 minutes, mirror: 40 minutes
-# HOST="dumps.wikimedia.org"
-HOST="wikimedia.bringyour.com"
+# Download using main dumps.wikimedia.org: 150 minutes, mirror: 40 minutes
+: ${WIKIMEDIA_HOST:=wikimedia.bringyour.com}
+# See list on https://wikimedia.bringyour.com/wikidatawiki/
+: ${WIKIDATA_DATE:=20220620}
 
-# Check https://wikimedia.bringyour.com/wikidatawiki/ which dates
-# are available. Actually open the directory to check if the dump
-# finished.
-DATE='20220701'
+
 DOWNLOADED_PATH="$BUILDID/downloaded"
 
 download() {
@@ -38,6 +34,6 @@ download() {
 # 1.7G  downloaded/page.sql.gz
 # 1.2G  downloaded/wb_items_per_site.sql.gz
 
-download https://$HOST/wikidatawiki/$DATE/wikidatawiki-$DATE-geo_tags.sql.gz          "$DOWNLOADED_PATH/geo_tags.sql.gz"
-download https://$HOST/wikidatawiki/$DATE/wikidatawiki-$DATE-page.sql.gz              "$DOWNLOADED_PATH/page.sql.gz"
-download https://$HOST/wikidatawiki/$DATE/wikidatawiki-$DATE-wb_items_per_site.sql.gz "$DOWNLOADED_PATH/wb_items_per_site.sql.gz"
+download https://$WIKIMEDIA_HOST/wikidatawiki/$WIKIDATA_DATE/wikidatawiki-$WIKIDATA_DATE-geo_tags.sql.gz          "$DOWNLOADED_PATH/geo_tags.sql.gz"
+download https://$WIKIMEDIA_HOST/wikidatawiki/$WIKIDATA_DATE/wikidatawiki-$WIKIDATA_DATE-page.sql.gz              "$DOWNLOADED_PATH/page.sql.gz"
+download https://$WIKIMEDIA_HOST/wikidatawiki/$WIKIDATA_DATE/wikidatawiki-$WIKIDATA_DATE-wb_items_per_site.sql.gz "$DOWNLOADED_PATH/wb_items_per_site.sql.gz"
