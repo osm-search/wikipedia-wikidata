@@ -7,10 +7,14 @@
 
 ./install_dependencies.sh
 
+export BUILDID=wiki_build_202207
+
+
 ./download_wikipedia.sh
 ./download_wikidata.sh
 ./download_wikidata_placetypes.sh
 
+# dropdb wikiprocessingdb
 ./import_wikipedia.sh
 ./import_wikidata.sh
 
