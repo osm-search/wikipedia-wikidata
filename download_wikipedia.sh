@@ -9,6 +9,7 @@ if [[ !$BUILDID ]]; then
 fi
 
 DOWNLOADED_PATH="$BUILDID/downloaded"
+DATE=20220620
 
 # List of mirrors https://dumps.wikimedia.org/mirrors.html
 # Download using main server: 150 minutes, mirror: 40 minutes
@@ -53,9 +54,6 @@ do
     # 176M  downloaded/tr/pagelinks.sql.gz
     # 106M  downloaded/tr/langlinks.sql.gz
     # 3.2M  downloaded/tr/redirect.sql.gz
-
-    # So far we were only interested in latest
-    DATE=latest
 
     download https://$HOST/${LANG}wiki/$DATE/${LANG}wiki-$DATE-page.sql.gz      "$DOWNLOADED_PATH/$LANG/page.sql.gz"
     download https://$HOST/${LANG}wiki/$DATE/${LANG}wiki-$DATE-pagelinks.sql.gz "$DOWNLOADED_PATH/$LANG/pagelinks.sql.gz"
