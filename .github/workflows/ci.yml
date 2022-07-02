@@ -17,11 +17,13 @@ jobs:
       run: ./install_dependencies.sh
     - name: Create database
       run: createdb wikiprocessingdb
-    - name: Build for language li
+    - name: Build for languages Limburgish (li), Bavarian (bar)
       run: |
-        echo 'li' > ./languages.txt
         ./steps/wikipedia_download.sh
         ./steps/wikipedia_import.sh
         ./steps/wikipedia_process.sh
+      env:
+        BUILDID: ci_test_build
+        LANGUAGES: li,bar
     - name: Test output
       run: true
