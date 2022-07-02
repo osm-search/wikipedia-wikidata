@@ -1,0 +1,27 @@
+name: "Continuous Integration"
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install PostgreSQL
+      run: |
+        sudo apt-get update
+        sudo apt-get install postgresql postgresql-client
+        sudo systemctl restart postgresql
+        sudo -u postgres createuser -s runner
+    - name: Install dependencies
+      run: ./install_dependencies.sh
+    - name: Create database
+      run: createdb wikiprocessingdb
+    - name: Build for language li
+      run: |
+        echo 'li' > ./languages.txt
+        ./download_wikipedia.sh
+        ./import_wikipedia.sh
+        ./process_wikipedia.sh
+    - name: Test output
+      run: true
