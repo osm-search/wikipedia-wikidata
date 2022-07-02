@@ -6,6 +6,40 @@ readarray -t LANGUAGES < languages.txt
 
 
 echo "====================================================================="
+echo "Create wikipedia calculation tables"
+echo "====================================================================="
+
+echo "CREATE TABLE linkcounts (
+        language text,
+        title    text,
+        count    integer,
+        sumcount integer,
+        lat      double precision,
+        lon      double precision
+     );"  | psqlcmd
+
+echo "CREATE TABLE wikipedia_article (
+        language    text NOT NULL,
+        title       text NOT NULL,
+        langcount   integer,
+        othercount  integer,
+        totalcount  integer,
+        lat double  precision,
+        lon double  precision,
+        importance  double precision,
+        title_en    text,
+        osm_type    character(1),
+        osm_id      bigint
+      );" | psqlcmd
+
+echo "CREATE TABLE wikipedia_redirect (
+        language   text,
+        from_title text,
+        to_title   text
+     );" | psqlcmd
+
+
+echo "====================================================================="
 echo "Process language tables and associated pagelink counts"
 echo "====================================================================="
 

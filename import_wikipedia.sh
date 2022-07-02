@@ -1,5 +1,12 @@
 #!/bin/bash
 
+
+if [[ !$BUILDID ]]; then
+    BUILDID=latest
+fi
+
+DOWNLOADED_PATH="$BUILDID/downloaded"
+
 psqlcmd() {
      psql --quiet wikiprocessingdb |& \
      grep -v 'does not exist, skipping' |& \
@@ -18,39 +25,6 @@ readarray -t LANGUAGES < languages.txt
 
 
 
-echo "====================================================================="
-echo "Create wikipedia calculation tables"
-echo "====================================================================="
-
-echo "CREATE TABLE linkcounts (
-        language text,
-        title    text,
-        count    integer,
-        sumcount integer,
-        lat      double precision,
-        lon      double precision
-     );"  | psqlcmd
-
-echo "CREATE TABLE wikipedia_article (
-        language    text NOT NULL,
-        title       text NOT NULL,
-        langcount   integer,
-        othercount  integer,
-        totalcount  integer,
-        lat double  precision,
-        lon double  precision,
-        importance  double precision,
-        title_en    text,
-        osm_type    character(1),
-        osm_id      bigint
-      );" | psqlcmd
-
-echo "CREATE TABLE wikipedia_redirect (
-        language   text,
-        from_title text,
-        to_title   text
-     );" | psqlcmd
-
 
 
 
@@ -60,19 +34,27 @@ echo "====================================================================="
 echo "Import individual wikipedia language tables"
 echo "====================================================================="
 
-for i in "${LANGUAGES[@]}"
+for LANG in "${LANGUAGES[@]}"
 do
-    echo "Language: $i"
+    echo "Import language: $LANG"
+
 
     # We pre-create the table schema. This allows us to
     # 1. Skip index creation. Most queries we do are full table scans
     # 2. Add constrain to only import namespace=0 (wikipedia articles)
     # Both cuts down data size considerably (50%+)
 
-    echo "Importing ${i}wiki-latest-pagelinks"
 
-    echo "DROP TABLE IF EXISTS ${i}pagelinks;" | psqlcmd
-    echo "CREATE TABLE ${i}pagelinks (
+    ##
+    ## PAGELINKS
+    ##
+    FILENAME="$DOWNLOADED_PATH/$LANG/pagelinks.sql.gz"
+    TABLENAME="${LANG}pagelinks"
+
+    echo "Importing $FILENAME"
+
+    echo "DROP TABLE IF EXISTS ${TABLENAME};" | psqlcmd
+    echo "CREATE TABLE ${TABLENAME} (
        pl_from            int  NOT NULL DEFAULT '0',
        pl_namespace       int  NOT NULL DEFAULT '0',
        pl_title           text NOT NULL DEFAULT '',
@@ -80,20 +62,24 @@ do
     );" | psqlcmd
 
     time \
-      gzip -dc ${i}wiki-latest-pagelinks.sql.gz | \
-      sed "s/\`pagelinks\`/\`${i}pagelinks\`/g" | \
+      gzip -dc ${FILENAME} | \
+      sed "s/\`pagelinks\`/\`${TABLENAME}\`/g" | \
       mysql2pgsqlcmd | \
       grep -v '^CREATE INDEX ' | \
       psqlcmd
 
 
+    ##
+    ## PAGE
+    ##
+    FILENAME="$DOWNLOADED_PATH/$LANG/page.sql.gz"
+    TABLENAME="${LANG}page"
 
-
-    echo "Importing ${i}wiki-latest-page"
+    echo "Importing $FILENAME"
 
     # autoincrement serial8 4byte
-    echo "DROP TABLE IF EXISTS ${i}page;" | psqlcmd
-    echo "CREATE TABLE ${i}page (
+    echo "DROP TABLE IF EXISTS ${TABLENAME};" | psqlcmd
+    echo "CREATE TABLE ${TABLENAME} (
        page_id             int NOT NULL,
        page_namespace      int NOT NULL DEFAULT '0',
        page_title          text NOT NULL DEFAULT '',
@@ -110,39 +96,48 @@ do
      );" | psqlcmd
 
     time \
-      gzip -dc ${i}wiki-latest-page.sql.gz | \
-      sed "s/\`page\`/\`${i}page\`/g" | \
+      gzip -dc ${FILENAME} | \
+      sed "s/\`page\`/\`${TABLENAME}\`/g" | \
       mysql2pgsqlcmd | \
       grep -v '^CREATE INDEX ' | \
       psqlcmd
 
 
 
+    ##
+    ## LANGLINKS
+    ##
+    FILENAME="$DOWNLOADED_PATH/$LANG/langlinks.sql.gz"
+    TABLENAME="${LANG}langlinks"
 
-    echo "Importing ${i}wiki-latest-langlinks"
+    echo "Importing $FILENAME"
 
-    echo "DROP TABLE IF EXISTS ${i}langlinks;" | psqlcmd
-    echo "CREATE TABLE ${i}langlinks (
+    echo "DROP TABLE IF EXISTS ${TABLENAME};" | psqlcmd
+    echo "CREATE TABLE ${TABLENAME} (
        ll_from   int  NOT NULL DEFAULT '0',
        ll_lang   text NOT NULL DEFAULT '',
        ll_title  text NOT NULL DEFAULT ''
     );" | psqlcmd
 
     time \
-      gzip -dc ${i}wiki-latest-langlinks.sql.gz | \
-      sed "s/\`langlinks\`/\`${i}langlinks\`/g" | \
+      gzip -dc ${FILENAME} | \
+      sed "s/\`langlinks\`/\`${TABLENAME}\`/g" | \
       mysql2pgsqlcmd | \
       grep -v '^CREATE INDEX ' | \
       psqlcmd
 
 
 
+    ##
+    ## REDIRECT
+    ##
+    FILENAME="$DOWNLOADED_PATH/$LANG/redirect.sql.gz"
+    TABLENAME="${LANG}redirect"
 
+    echo "Importing $FILENAME"
 
-    echo "Importing ${i}wiki-latest-redirect"
-
-    echo "DROP TABLE IF EXISTS ${i}redirect;" | psqlcmd
-    echo "CREATE TABLE ${i}redirect (
+    echo "DROP TABLE IF EXISTS ${TABLENAME};" | psqlcmd
+    echo "CREATE TABLE ${TABLENAME} (
        rd_from       int   NOT NULL DEFAULT '0',
        rd_namespace  int   NOT NULL DEFAULT '0',
        rd_title      text  NOT NULL DEFAULT '',
@@ -151,8 +146,8 @@ do
     );" | psqlcmd
 
     time \
-      gzip -dc ${i}wiki-latest-redirect.sql.gz | \
-      sed "s/\`redirect\`/\`${i}redirect\`/g" | \
+      gzip -dc ${FILENAME} | \
+      sed "s/\`redirect\`/\`${TABLENAME}\`/g" | \
       mysql2pgsqlcmd | \
       grep -v '^CREATE INDEX ' | \
       psqlcmd

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ !$BUILDID ]]; then
+    BUILDID=latest
+fi
+
+DOWNLOADED_PATH="$BUILDID/downloaded"
+
 psqlcmd() {
      psql --quiet wikiprocessingdb
 }
@@ -15,14 +21,14 @@ echo "====================================================================="
 echo "Import wikidata dump tables"
 echo "====================================================================="
 
-echo "Importing wikidatawiki-latest-geo_tags"
-gzip -dc wikidatawiki-latest-geo_tags.sql.gz          | mysql2pgsqlcmd | psqlcmd
+echo "Importing geo_tags"
+gzip -dc "$DOWNLOADED_PATH/geo_tags.sql.gz"          | mysql2pgsqlcmd | psqlcmd
 
-echo "Importing wikidatawiki-latest-page"
-gzip -dc wikidatawiki-latest-page.sql.gz              | mysql2pgsqlcmd | psqlcmd
+echo "Importing page"
+gzip -dc "$DOWNLOADED_PATH/page.sql.gz"              | mysql2pgsqlcmd | psqlcmd
 
-echo "Importing wikidatawiki-latest-wb_items_per_site"
-gzip -dc wikidatawiki-latest-wb_items_per_site.sql.gz | mysql2pgsqlcmd | psqlcmd
+echo "Importing wb_items_per_site"
+gzip -dc "$DOWNLOADED_PATH/wb_items_per_site.sql.gz" | mysql2pgsqlcmd | psqlcmd
 
 
 
