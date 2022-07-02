@@ -1,14 +1,15 @@
 #!/bin/bash
 
+# set defaults
+: ${BUILDID:=latest}
+: ${DATABASE_NAME:=wikiprocessingdb}
+# Languages as comma-separated string, e.g. 'en,fr,de'
+: ${LANGUAGES:=bar,cy}
+LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
+
 psqlcmd() {
-     psql --quiet wikiprocessingdb
+     psql --quiet $DATABASE_NAME
 }
-
-
-
-# languages to process (refer to List of Wikipedias here: https://en.wikipedia.org/wiki/List_of_Wikipedias)
-# requires Bash 4.0
-readarray -t LANGUAGES < languages.txt
 
 
 
@@ -99,7 +100,7 @@ echo "CREATE TABLE wikidata_pages (
         language      text
       );" | psqlcmd
 
-for i in "${LANGUAGES[@]}"
+for i in "${LANGUAGES_ARRAY[@]}"
 do
    echo "CREATE TABLE wikidata_${i}_pages AS
          SELECT wikidata_places.item,

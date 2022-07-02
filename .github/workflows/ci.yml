@@ -9,19 +9,21 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install PostgreSQL
       run: |
-        sudo apt-get update
-        sudo apt-get install postgresql postgresql-client
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq postgresql postgresql-client
         sudo systemctl restart postgresql
         sudo -u postgres createuser -s runner
     - name: Install dependencies
       run: ./install_dependencies.sh
     - name: Create database
       run: createdb wikiprocessingdb
-    - name: Build for language li
+    - name: Build for languages Limburgish (li), Bavarian (bar)
       run: |
-        echo 'li' > ./languages.txt
-        ./download_wikipedia.sh
-        ./import_wikipedia.sh
-        ./process_wikipedia.sh
+        ./steps/wikipedia_download.sh
+        ./steps/wikipedia_import.sh
+        ./steps/wikipedia_process.sh
+      env:
+        BUILDID: ci_test_build
+        LANGUAGES: li,bar
     - name: Test output
       run: true

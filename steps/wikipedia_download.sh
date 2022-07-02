@@ -4,22 +4,19 @@ echo "====================================================================="
 echo "Download individual wikipedia language tables dumps"
 echo "====================================================================="
 
-if [[ !$BUILDID ]]; then
-    BUILDID=latest
-fi
+# set defaults
+: ${BUILDID:=latest}
+# Languages as comma-separated string, e.g. 'en,fr,de'
+: ${LANGUAGES:=bar,cy}
+LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
+# List of mirrors https://dumps.wikimedia.org/mirrors.html
+# Download using main dumps.wikimedia.org: 150 minutes, mirror: 40 minutes
+: ${WIKIMEDIA_HOST:=wikimedia.bringyour.com}
+# See list on https://wikimedia.bringyour.com/wikidatawiki/
+: ${WIKIPEDIA_DATE:=20220620}
+
 
 DOWNLOADED_PATH="$BUILDID/downloaded"
-DATE=20220620
-
-# List of mirrors https://dumps.wikimedia.org/mirrors.html
-# Download using main server: 150 minutes, mirror: 40 minutes
-# HOST="dumps.wikimedia.org"
-HOST="wikimedia.bringyour.com"
-
-# languages to process (refer to List of Wikipedias here: https://en.wikipedia.org/wiki/List_of_Wikipedias)
-# requires Bash 4.0
-readarray -t LANGUAGES < languages.txt
-
 
 
 download() {
@@ -37,7 +34,7 @@ download() {
     fi
 }
 
-for LANG in "${LANGUAGES[@]}"
+for LANG in "${LANGUAGES_ARRAY[@]}"
 do
     echo "Language: $LANG"
 
@@ -55,8 +52,8 @@ do
     # 106M  downloaded/tr/langlinks.sql.gz
     # 3.2M  downloaded/tr/redirect.sql.gz
 
-    download https://$HOST/${LANG}wiki/$DATE/${LANG}wiki-$DATE-page.sql.gz      "$DOWNLOADED_PATH/$LANG/page.sql.gz"
-    download https://$HOST/${LANG}wiki/$DATE/${LANG}wiki-$DATE-pagelinks.sql.gz "$DOWNLOADED_PATH/$LANG/pagelinks.sql.gz"
-    download https://$HOST/${LANG}wiki/$DATE/${LANG}wiki-$DATE-langlinks.sql.gz "$DOWNLOADED_PATH/$LANG/langlinks.sql.gz"
-    download https://$HOST/${LANG}wiki/$DATE/${LANG}wiki-$DATE-redirect.sql.gz  "$DOWNLOADED_PATH/$LANG/redirect.sql.gz"
+    download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-page.sql.gz      "$DOWNLOADED_PATH/$LANG/page.sql.gz"
+    download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-pagelinks.sql.gz "$DOWNLOADED_PATH/$LANG/pagelinks.sql.gz"
+    download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-langlinks.sql.gz "$DOWNLOADED_PATH/$LANG/langlinks.sql.gz"
+    download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-redirect.sql.gz  "$DOWNLOADED_PATH/$LANG/redirect.sql.gz"
 done
