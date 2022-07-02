@@ -4,6 +4,7 @@ OSM contributors frequently tag items with links to Wikipedia and Wikidata. Nomi
 
 These scripts extract and prepare both Wikipedia page rank and Wikidata links for use in Nominatim.  
 
+Have a look at `complete_run.sh` as entry point to the code.
 
 ---
 Final tables
