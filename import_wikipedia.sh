@@ -83,7 +83,6 @@ do
        page_id             int NOT NULL,
        page_namespace      int NOT NULL DEFAULT '0',
        page_title          text NOT NULL DEFAULT '',
-       page_restrictions   text NOT NULL,
        page_is_redirect    smallint NOT NULL DEFAULT '0',
        page_is_new         smallint NOT NULL DEFAULT '0',
        page_random         double precision NOT NULL DEFAULT '0',

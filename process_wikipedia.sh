@@ -4,6 +4,9 @@
 # requires Bash 4.0
 readarray -t LANGUAGES < languages.txt
 
+psqlcmd() {
+     psql --quiet wikiprocessingdb
+}
 
 echo "====================================================================="
 echo "Create wikipedia calculation tables"
