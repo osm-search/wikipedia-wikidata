@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# set defaults
+: ${BUILDID:=latest}
+
+DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
+TEMP_PATH=$DOWNLOADED_PATH/tmp
+
 echo "====================================================================="
 echo "Get wikidata places from wikidata query API"
 echo "====================================================================="
@@ -50,9 +56,11 @@ echo "====================================================================="
 # https://ja.wikipedia.org/wiki/%E3%82%81%E3%81%8C%E3%81%B2%E3%82%89%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4
 # so we leave them in.
 
+mkdir -p $DOWNLOADED_PATH
+
 echo "Number of place types:"
-wc -l wikidata_place_types.txt
-echo '' > wikidata_place_dump.csv
+wc -l config/wikidata_place_types.txt
+echo '' > $DOWNLOADED_PATH/wikidata_place_dump.csv
 
 while read PT_LINE ; do
     QID=$(echo $PT_LINE | sed 's/;.*//' )
@@ -89,8 +97,8 @@ while read PT_LINE ; do
     grep -e "[[:space:]]0$" | \
     cut -f2 | \
     sort | \
-    awk -v qid=$QID '{print $0 ","qid}'  > $QID.csv
-    wc -l $QID.csv
+    awk -v qid=$QID '{print $0 ","qid}' > $TEMP_PATH/QID.csv
+    wc -l $TEMP_PATH/$QID.csv
 
     # output example:
     # Q97774986,Q130003
@@ -100,6 +108,9 @@ while read PT_LINE ; do
     # Q992902,Q130003
     # Q995986,Q130003
 
-    cat $QID.csv >> wikidata_place_dump.csv
-    rm $QID.csv
-done < wikidata_place_types.txt
+    cat $TEMP_PATH/QID.csv >> $DOWNLOADED_PATH/wikidata_place_dump.csv
+    rm $TEMP_PATH/$QID.csv
+done < config/wikidata_place_types.txt
+
+cp config/wikidata_place_types_levels.txt $DOWNLOADED_PATH
+rmdir $TEMP_PATH

@@ -4,7 +4,9 @@
 : ${BUILDID:=latest}
 : ${DATABASE_NAME:=wikiprocessingdb}
 
-DOWNLOADED_PATH="$BUILDID/downloaded"
+DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
+# postgresql's COPY requires full path
+DOWNLOADED_PATH_ABS=$(realpath "$DOWNLOADED_PATH")
 
 psqlcmd() {
      psql --quiet $DATABASE_NAME
@@ -44,7 +46,7 @@ echo "CREATE TABLE wikidata_place_dump (
       );"  | psqlcmd
 
 echo "COPY wikidata_place_dump (item, instance_of)
-      FROM '$PWD/wikidata_place_dump.csv'
+      FROM '$DOWNLOADED_PATH_ABS/wikidata_place_dump.csv'
       DELIMITER ','
       CSV
       ;"  | psqlcmd
@@ -55,7 +57,7 @@ echo "CREATE TABLE wikidata_place_type_levels (
       );" | psqlcmd
 
 echo "COPY wikidata_place_type_levels (place_type, level)
-      FROM '$PWD/wikidata_place_type_levels.csv'
+      FROM '$DOWNLOADED_PATH_ABS/wikidata_place_type_levels.csv'
       DELIMITER ','
       CSV
       HEADER
