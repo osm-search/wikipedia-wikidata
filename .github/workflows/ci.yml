@@ -20,6 +20,7 @@ jobs:
     - name: Build for languages Limburgish (li), Bavarian (bar)
       run: |
         ./steps/wikipedia_download.sh
+        ./steps/wikipedia_sql2csv.sh
         ./steps/wikipedia_import.sh
         ./steps/wikipedia_process.sh
       env:
