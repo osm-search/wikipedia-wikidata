@@ -26,4 +26,4 @@ jobs:
         BUILDID: ci_test_build
         LANGUAGES: li,bar
     - name: Test output
-      run: true
+      run: tests/run.sh
