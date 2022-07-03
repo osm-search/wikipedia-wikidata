@@ -14,7 +14,7 @@ echo "====================================================================="
 
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
-    mkdir -p "converted/$LANG/"
+    mkdir -p "$CONVERTED_PATH/$LANG/"
 
     echo "[language $LANG] Page table SQL => CSV"
     # CREATE TABLE `page` (
