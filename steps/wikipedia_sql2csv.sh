@@ -12,7 +12,7 @@ echo "====================================================================="
 echo "Convert Wikipedia language tables"
 echo "====================================================================="
 
-for LANG in "${LANGUAGES[@]}"
+for LANG in "${LANGUAGES_ARRAY[@]}"
 do
     mkdir -p "converted/$LANG/"
 
