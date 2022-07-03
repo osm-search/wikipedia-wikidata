@@ -4,4 +4,4 @@
 # Tested on Ubuntu-20
 #
 
-sudo apt-get install -y wget perl
+sudo apt-get install -y wget perl coreutils

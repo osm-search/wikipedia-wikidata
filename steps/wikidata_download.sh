@@ -13,7 +13,7 @@ echo "====================================================================="
 : ${WIKIDATA_DATE:=20220620}
 
 
-DOWNLOADED_PATH="$BUILDID/downloaded"
+DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
 
 download() {
     if [ -e "$2" ]; then
@@ -28,6 +28,7 @@ download() {
         rm -f "$2"
         exit 1
     fi
+    du -h "$2" | cut -f1
 }
 
 # 114M  downloaded/geo_tags.sql.gz

@@ -7,14 +7,16 @@
 
 ./install_dependencies.sh
 
-export BUILDID=wiki_build_202207
-export LANGUAGES=$(grep -v '^#' languages.txt | tr "\n" ",")
+export BUILDID=wiki_build_20220620
+export LANGUAGES=$(grep -v '^#' config/languages.txt | tr "\n" ",")
+export DATABASE_NAME=wikiprocessingdb
 
 ./steps/wikipedia_download.sh
 ./steps/wikidata_download.sh
 ./steps/wikidata_api_fetch_placetypes.sh
 
-# dropdb wikiprocessingdb
+# dropdb wikiprocessingdb $DATABASE_NAME
+createdb wikiprocessingdb $DATABASE_NAME
 ./steps/wikipedia_import.sh
 ./steps/wikidata_import.sh
 

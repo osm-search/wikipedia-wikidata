@@ -6,7 +6,7 @@
 : ${LANGUAGES:=bar,cy}
 LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
-DOWNLOADED_PATH="$BUILDID/downloaded"
+DOWNLOADED_PATH="$BUILDID/downloaded/wikipedia"
 
 psqlcmd() {
      psql --quiet $DATABASE_NAME |& \
