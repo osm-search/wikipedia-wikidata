@@ -15,6 +15,7 @@ export DATABASE_NAME=wikiprocessingdb
 ./steps/wikidata_download.sh
 ./steps/wikidata_api_fetch_placetypes.sh
 
+./steps/wikipedia_sql2csv.sh
 ./steps/wikidata_sql2csv.sh
 
 # dropdb wikiprocessingdb $DATABASE_NAME
