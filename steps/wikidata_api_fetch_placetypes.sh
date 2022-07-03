@@ -109,7 +109,7 @@ while read PT_LINE ; do
     # Q992902,Q130003
     # Q995986,Q130003
 
-    cat $TEMP_PATH/QID.csv >> $DOWNLOADED_PATH/wikidata_place_dump.csv
+    cat $TEMP_PATH/$QID.csv >> $DOWNLOADED_PATH/wikidata_place_dump.csv
     rm $TEMP_PATH/$QID.csv
 done < config/wikidata_place_types.txt
 
