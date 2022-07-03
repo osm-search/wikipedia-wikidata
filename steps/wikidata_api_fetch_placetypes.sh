@@ -98,7 +98,7 @@ while read PT_LINE ; do
     grep -e "[[:space:]]0$" | \
     cut -f2 | \
     sort | \
-    awk -v qid=$QID '{print $0 ","qid}' > $TEMP_PATH/QID.csv
+    awk -v qid=$QID '{print $0 ","qid}' > $TEMP_PATH/$QID.csv
     wc -l $TEMP_PATH/$QID.csv
 
     # output example:
