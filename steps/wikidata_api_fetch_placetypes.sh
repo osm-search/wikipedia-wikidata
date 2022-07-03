@@ -57,6 +57,7 @@ echo "====================================================================="
 # so we leave them in.
 
 mkdir -p $DOWNLOADED_PATH
+mkdir -p $TEMP_PATH
 
 echo "Number of place types:"
 wc -l config/wikidata_place_types.txt
@@ -97,7 +98,7 @@ while read PT_LINE ; do
     grep -e "[[:space:]]0$" | \
     cut -f2 | \
     sort | \
-    awk -v qid=$QID '{print $0 ","qid}' > $TEMP_PATH/QID.csv
+    awk -v qid=$QID '{print $0 ","qid}' > $TEMP_PATH/$QID.csv
     wc -l $TEMP_PATH/$QID.csv
 
     # output example:
@@ -108,9 +109,12 @@ while read PT_LINE ; do
     # Q992902,Q130003
     # Q995986,Q130003
 
-    cat $TEMP_PATH/QID.csv >> $DOWNLOADED_PATH/wikidata_place_dump.csv
+    cat $TEMP_PATH/$QID.csv >> $DOWNLOADED_PATH/wikidata_place_dump.csv
     rm $TEMP_PATH/$QID.csv
 done < config/wikidata_place_types.txt
 
-cp config/wikidata_place_types_levels.txt $DOWNLOADED_PATH
+cp config/wikidata_place_type_levels.csv $DOWNLOADED_PATH
+# temp should be empty but if not then that should be fine, too
 rmdir $TEMP_PATH
+
+du -h $DOWNLOADED_PATH

@@ -23,6 +23,10 @@ jobs:
         ./steps/wikipedia_sql2csv.sh
         ./steps/wikipedia_import.sh
         ./steps/wikipedia_process.sh
+
+        grep county config/wikidata_place_types.txt > new.txt
+        mv new.txt config/wikidata_place_types.txt
+        ./steps/wikidata_api_fetch_placetypes.sh
       env:
         BUILDID: ci_test_build
         LANGUAGES: li,bar
