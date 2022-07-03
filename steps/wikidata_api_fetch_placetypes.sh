@@ -57,6 +57,7 @@ echo "====================================================================="
 # so we leave them in.
 
 mkdir -p $DOWNLOADED_PATH
+mkdir -p $TEMP_PATH
 
 echo "Number of place types:"
 wc -l config/wikidata_place_types.txt
@@ -113,4 +114,7 @@ while read PT_LINE ; do
 done < config/wikidata_place_types.txt
 
 cp config/wikidata_place_types_levels.txt $DOWNLOADED_PATH
+# temp should be empty but if not then that should be fine, too
 rmdir $TEMP_PATH
+
+du -h $DOWNLOADED_PATH
