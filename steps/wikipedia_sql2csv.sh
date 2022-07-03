@@ -12,10 +12,8 @@ echo "====================================================================="
 echo "Convert Wikipedia language tables"
 echo "====================================================================="
 
-for $LANG in "${LANGUAGES[@]}"
+for LANG in "${LANGUAGES[@]}"
 do
-    echo "Language: $LANG"
-
     mkdir -p "converted/$LANG/"
 
     echo "[language $LANG] Page table SQL => CSV"
@@ -115,4 +113,6 @@ do
     grep -e ',0$' | \
     sed 's/,0$//' | \
     gzip -9 > $CONVERTED_PATH/$LANG/redirects.csv.gz
+
+    du -h $CONVERTED_PATH/$LANG/*
 done
