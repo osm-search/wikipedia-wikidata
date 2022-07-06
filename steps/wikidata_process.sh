@@ -21,6 +21,7 @@ echo "====================================================================="
 echo "Create derived tables"
 echo "====================================================================="
 
+echo "DROP TABLE IF EXISTS geo_earth_primary;" | psqlcmd
 echo "CREATE TABLE geo_earth_primary AS
       SELECT gt_page_id,
              gt_lat,
@@ -36,6 +37,8 @@ echo "CREATE TABLE geo_earth_primary AS
                  OR gt_lon=0)
       ;" | psqlcmd
 
+
+echo "DROP TABLE IF EXISTS geo_earth_wikidata;" | psqlcmd
 echo "CREATE TABLE geo_earth_wikidata AS
       SELECT DISTINCT geo_earth_primary.gt_page_id,
                       geo_earth_primary.gt_lat,
@@ -60,6 +63,8 @@ echo "UPDATE wikidata_place_dump
       WHERE wikidata_place_dump.instance_of = wikidata_place_type_levels.place_type
       ;" | psqlcmd
 
+
+echo "DROP TABLE IF EXISTS wikidata_places;" | psqlcmd
 echo "CREATE TABLE wikidata_places
       AS
       SELECT DISTINCT ON (item) item,
@@ -91,6 +96,7 @@ echo "Process language pages"
 echo "====================================================================="
 
 
+echo "DROP TABLE IF EXISTS wikidata_pages;" | psqlcmd
 echo "CREATE TABLE wikidata_pages (
         item          text,
         instance_of   text,
@@ -102,6 +108,7 @@ echo "CREATE TABLE wikidata_pages (
 
 for i in "${LANGUAGES_ARRAY[@]}"
 do
+   echo "DROP TABLE IF EXISTS wikidata_${i}_pages;" | psqlcmd
    echo "CREATE TABLE wikidata_${i}_pages AS
          SELECT wikidata_places.item,
                 wikidata_places.instance_of,
@@ -162,6 +169,7 @@ echo "UPDATE wikipedia_article
         AND wikipedia_article.title  = wikidata_pages.wp_page_title
       ;" | psqlcmd
 
+echo "DROP TABLE IF EXISTS wikipedia_article_slim;" | psqlcmd
 echo "CREATE TABLE wikipedia_article_slim
       AS
       SELECT * FROM wikipedia_article

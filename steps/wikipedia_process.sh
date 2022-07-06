@@ -15,6 +15,7 @@ echo "====================================================================="
 echo "Create wikipedia calculation tables"
 echo "====================================================================="
 
+echo "DROP TABLE IF EXISTS linkcounts;" | psqlcmd
 echo "CREATE TABLE linkcounts (
         language text,
         title    text,
@@ -24,6 +25,7 @@ echo "CREATE TABLE linkcounts (
         lon      double precision
      );"  | psqlcmd
 
+echo "DROP TABLE IF EXISTS wikipedia_article;" | psqlcmd
 echo "CREATE TABLE wikipedia_article (
         language    text NOT NULL,
         title       text NOT NULL,
@@ -38,6 +40,7 @@ echo "CREATE TABLE wikipedia_article (
         osm_id      bigint
       );" | psqlcmd
 
+echo "DROP TABLE IF EXISTS wikipedia_redirect;" | psqlcmd
 echo "CREATE TABLE wikipedia_redirect (
         language   text,
         from_title text,
@@ -54,6 +57,7 @@ for i in "${LANGUAGES_ARRAY[@]}"
 do
     echo "Language: $i"
 
+    echo "DROP TABLE IF EXISTS ${i}pagelinkcount;" | psqlcmd
     echo "CREATE TABLE ${i}pagelinkcount
           AS
           SELECT pl_title AS title,
