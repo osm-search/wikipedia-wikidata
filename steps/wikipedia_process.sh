@@ -8,7 +8,8 @@ LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
 
 psqlcmd() {
-     psql --quiet $DATABASE_NAME
+     psql --quiet $DATABASE_NAME |& \
+     grep -v 'does not exist, skipping'
 }
 
 echo "====================================================================="

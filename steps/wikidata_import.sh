@@ -9,7 +9,8 @@ DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
 DOWNLOADED_PATH_ABS=$(realpath "$DOWNLOADED_PATH")
 
 psqlcmd() {
-     psql --quiet $DATABASE_NAME
+     psql --quiet $DATABASE_NAME |& \
+     grep -v 'does not exist, skipping'
 }
 
 mysql2pgsqlcmd() {
