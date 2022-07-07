@@ -8,7 +8,8 @@
 LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
 psqlcmd() {
-     psql --quiet $DATABASE_NAME
+     psql --quiet $DATABASE_NAME |& \
+     grep -v 'does not exist, skipping'
 }
 
 
@@ -159,6 +160,14 @@ echo "====================================================================="
 echo "Add wikidata to wikipedia_article table"
 echo "====================================================================="
 
+echo "ALTER TABLE wikipedia_article
+      ADD COLUMN wd_page_title text
+      ;" | psqlcmd
+
+echo "ALTER TABLE wikipedia_article
+      ADD COLUMN instance_of text
+      ;" | psqlcmd
+
 echo "UPDATE wikipedia_article
       SET lat = wikidata_pages.lat,
           lon = wikidata_pages.lon,
@@ -169,12 +178,18 @@ echo "UPDATE wikipedia_article
         AND wikipedia_article.title  = wikidata_pages.wp_page_title
       ;" | psqlcmd
 
+# 35 minutes
+# 166m rows
+
 echo "DROP TABLE IF EXISTS wikipedia_article_slim;" | psqlcmd
 echo "CREATE TABLE wikipedia_article_slim
       AS
       SELECT * FROM wikipedia_article
-      WHERE wikidata_id IS NOT NULL
+      WHERE wd_page_title IS NOT NULL
       ;" | psqlcmd
+
+# 5 minutes
+# 9.2m rows
 
 echo "ALTER TABLE wikipedia_article
       RENAME TO wikipedia_article_full
