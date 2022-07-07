@@ -191,12 +191,54 @@ echo "CREATE TABLE wikipedia_article_slim
 # 5 minutes
 # 9.2m rows
 
-echo "ALTER TABLE wikipedia_article
-      RENAME TO wikipedia_article_full
+# echo "ALTER TABLE wikipedia_article
+#       RENAME TO wikipedia_article_full
+#       ;" | psqlcmd
+
+# echo "ALTER TABLE wikipedia_article_slim
+#       RENAME TO wikipedia_article
+#       ;" | psqlcmd
+
+echo "CREATE TABLE wikipedia_redirect_slim
+      AS
+      SELECT wikipedia_redirect.*
+      FROM wikipedia_redirect
+      RIGHT OUTER JOIN wikipedia_article
+                   ON (wikipedia_redirect.language = wikipedia_article.language
+                       AND
+                       wikipedia_redirect.to_title = wikipedia_article.title)
       ;" | psqlcmd
 
-echo "ALTER TABLE wikipedia_article_slim
-      RENAME TO wikipedia_article
-      ;" | psqlcmd
+# 13m rows
 
 
+echo "====================================================================="
+echo "Create ouptput"
+echo "====================================================================="
+
+OUTPUT_PATH="$BUILDID/output"
+mkdir -p "$OUTPUT_PATH"
+# Postgresql needs to have write access
+chmod 777 "$OUTPUT_PATH"
+
+echo "COPY wikipedia_article_slim
+      TO '$OUTPUT_PATH/wikipedia_article.csv'
+      CSV
+      DELIMITER ','
+      HEADER;" | psqlcmd
+
+gzip -9 "$OUTPUT_PATH/wikipedia_article.csv"
+
+
+echo "COPY wikipedia_redirect_slim
+      TO '$OUTPUT_PATH/wikipedia_redirect.csv'
+      CSV
+      DELIMITER ','
+      HEADER;" | psqlcmd
+
+gzip -9 "$OUTPUT_PATH/wikipedia_redirect.csv"
+
+
+du -h $OUTPUT_PATH/*
+# 324M  output/wikipedia_article.csv.gz
+# 118M  output/wikipedia_redirect.csv.gz

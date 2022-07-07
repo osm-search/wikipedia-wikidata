@@ -156,3 +156,6 @@ gzip -9 \
 
 
 du -h $CONVERTED_PATH/*
+# 88M     geo_tags.csv.gz
+# 480M    page.csv.gz
+# 744M    wb_items_per_site.csv.gz
