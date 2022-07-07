@@ -130,5 +130,4 @@ echo "UPDATE wikipedia_article
       SET importance = LOG(totalcount)/LOG((SELECT MAX(totalcount) FROM wikipedia_article))
       ;" | psqlcmd
 
-
-
+echo "done"
