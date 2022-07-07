@@ -4,7 +4,7 @@
 # Tested on Ubuntu-20
 #
 
-sudo apt-get install -y wget perl coreutils nodejs
+sudo apt-get install -y wget perl coreutils nodejs jq moreutils
 
 # https://github.com/wireservice/csvkit
 # https://csvkit.readthedocs.io
@@ -13,4 +13,4 @@ pip install csvkit
 
 # https://wdtaxonomy.readthedocs.io/
 node --version
-npm install -g wikidata-taxonomy
+sudo npm install -g wikidata-taxonomy

@@ -91,7 +91,7 @@ sed 's/\r\?//g' | \
 csvcut -c 1,3,2 | \
 grep -e ',0$' | \
 sed 's/,0$//' | \
-grep -v ',Q' | \
+grep ',Q' | \
 gzip -9 \
 > $CONVERTED_PATH/page.csv.gz
 
@@ -155,4 +155,7 @@ gzip -9 \
 # 2912549,cawiki,Brúixola Brunton
 
 
-ls -lah $CONVERTED_PATH
+du -h $CONVERTED_PATH/*
+# 88M     geo_tags.csv.gz
+# 480M    page.csv.gz
+# 744M    wb_items_per_site.csv.gz

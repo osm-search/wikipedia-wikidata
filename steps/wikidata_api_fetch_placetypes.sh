@@ -61,7 +61,7 @@ mkdir -p $TEMP_PATH
 
 echo "Number of place types:"
 wc -l config/wikidata_place_types.txt
-echo '' > $DOWNLOADED_PATH/wikidata_place_dump.csv
+echo -n > $DOWNLOADED_PATH/wikidata_place_dump.csv
 
 while read PT_LINE ; do
     QID=$(echo $PT_LINE | sed 's/;.*//' )

@@ -8,7 +8,8 @@
 LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
 psqlcmd() {
-     psql --quiet $DATABASE_NAME
+     psql --quiet $DATABASE_NAME |& \
+     grep -v 'does not exist, skipping'
 }
 
 
@@ -21,6 +22,7 @@ echo "====================================================================="
 echo "Create derived tables"
 echo "====================================================================="
 
+echo "DROP TABLE IF EXISTS geo_earth_primary;" | psqlcmd
 echo "CREATE TABLE geo_earth_primary AS
       SELECT gt_page_id,
              gt_lat,
@@ -36,6 +38,8 @@ echo "CREATE TABLE geo_earth_primary AS
                  OR gt_lon=0)
       ;" | psqlcmd
 
+
+echo "DROP TABLE IF EXISTS geo_earth_wikidata;" | psqlcmd
 echo "CREATE TABLE geo_earth_wikidata AS
       SELECT DISTINCT geo_earth_primary.gt_page_id,
                       geo_earth_primary.gt_lat,
@@ -60,6 +64,8 @@ echo "UPDATE wikidata_place_dump
       WHERE wikidata_place_dump.instance_of = wikidata_place_type_levels.place_type
       ;" | psqlcmd
 
+
+echo "DROP TABLE IF EXISTS wikidata_places;" | psqlcmd
 echo "CREATE TABLE wikidata_places
       AS
       SELECT DISTINCT ON (item) item,
@@ -91,6 +97,7 @@ echo "Process language pages"
 echo "====================================================================="
 
 
+echo "DROP TABLE IF EXISTS wikidata_pages;" | psqlcmd
 echo "CREATE TABLE wikidata_pages (
         item          text,
         instance_of   text,
@@ -102,6 +109,7 @@ echo "CREATE TABLE wikidata_pages (
 
 for i in "${LANGUAGES_ARRAY[@]}"
 do
+   echo "DROP TABLE IF EXISTS wikidata_${i}_pages;" | psqlcmd
    echo "CREATE TABLE wikidata_${i}_pages AS
          SELECT wikidata_places.item,
                 wikidata_places.instance_of,
@@ -152,6 +160,14 @@ echo "====================================================================="
 echo "Add wikidata to wikipedia_article table"
 echo "====================================================================="
 
+echo "ALTER TABLE wikipedia_article
+      ADD COLUMN wd_page_title text
+      ;" | psqlcmd
+
+echo "ALTER TABLE wikipedia_article
+      ADD COLUMN instance_of text
+      ;" | psqlcmd
+
 echo "UPDATE wikipedia_article
       SET lat = wikidata_pages.lat,
           lon = wikidata_pages.lon,
@@ -162,18 +178,67 @@ echo "UPDATE wikipedia_article
         AND wikipedia_article.title  = wikidata_pages.wp_page_title
       ;" | psqlcmd
 
+# 35 minutes
+# 166m rows
+
+echo "DROP TABLE IF EXISTS wikipedia_article_slim;" | psqlcmd
 echo "CREATE TABLE wikipedia_article_slim
       AS
       SELECT * FROM wikipedia_article
-      WHERE wikidata_id IS NOT NULL
+      WHERE wd_page_title IS NOT NULL
       ;" | psqlcmd
 
-echo "ALTER TABLE wikipedia_article
-      RENAME TO wikipedia_article_full
+# 5 minutes
+# 9.2m rows
+
+# echo "ALTER TABLE wikipedia_article
+#       RENAME TO wikipedia_article_full
+#       ;" | psqlcmd
+
+# echo "ALTER TABLE wikipedia_article_slim
+#       RENAME TO wikipedia_article
+#       ;" | psqlcmd
+
+echo "CREATE TABLE wikipedia_redirect_slim
+      AS
+      SELECT wikipedia_redirect.*
+      FROM wikipedia_redirect
+      RIGHT OUTER JOIN wikipedia_article
+                   ON (wikipedia_redirect.language = wikipedia_article.language
+                       AND
+                       wikipedia_redirect.to_title = wikipedia_article.title)
       ;" | psqlcmd
 
-echo "ALTER TABLE wikipedia_article_slim
-      RENAME TO wikipedia_article
-      ;" | psqlcmd
+# 13m rows
 
 
+echo "====================================================================="
+echo "Create ouptput"
+echo "====================================================================="
+
+OUTPUT_PATH="$BUILDID/output"
+mkdir -p "$OUTPUT_PATH"
+# Postgresql needs to have write access
+chmod 777 "$OUTPUT_PATH"
+
+echo "COPY wikipedia_article_slim
+      TO '$OUTPUT_PATH/wikipedia_article.csv'
+      CSV
+      DELIMITER ','
+      HEADER;" | psqlcmd
+
+gzip -9 "$OUTPUT_PATH/wikipedia_article.csv"
+
+
+echo "COPY wikipedia_redirect_slim
+      TO '$OUTPUT_PATH/wikipedia_redirect.csv'
+      CSV
+      DELIMITER ','
+      HEADER;" | psqlcmd
+
+gzip -9 "$OUTPUT_PATH/wikipedia_redirect.csv"
+
+
+du -h $OUTPUT_PATH/*
+# 324M  output/wikipedia_article.csv.gz
+# 118M  output/wikipedia_redirect.csv.gz
