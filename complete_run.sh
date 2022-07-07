@@ -18,8 +18,8 @@ export DATABASE_NAME=wikiprocessingdb
 ./steps/wikipedia_sql2csv.sh
 ./steps/wikidata_sql2csv.sh
 
-# dropdb wikiprocessingdb $DATABASE_NAME
-createdb wikiprocessingdb $DATABASE_NAME
+# dropdb --if-exists $DATABASE_NAME
+createdb $DATABASE_NAME
 ./steps/wikipedia_import.sh
 ./steps/wikidata_import.sh
 
