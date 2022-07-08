@@ -4,54 +4,97 @@
 : ${BUILDID:=latest}
 : ${DATABASE_NAME:=wikiprocessingdb}
 
-DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
+CONVERTED_PATH="$BUILDID/converted/wikidata"
 # postgresql's COPY requires full path
-DOWNLOADED_PATH_ABS=$(realpath "$DOWNLOADED_PATH")
+CONVERTED_PATH_ABS=$(realpath "$CONVERTED_PATH")
 
 psqlcmd() {
      psql --quiet $DATABASE_NAME |& \
      grep -v 'does not exist, skipping'
 }
 
-mysql2pgsqlcmd() {
-     ./bin/mysql2pgsql.perl /dev/stdin /dev/stdout
-}
-
-
-
 
 echo "====================================================================="
-echo "Import wikidata dump tables"
+echo "Import wikidata tables"
 echo "====================================================================="
 
-echo "Importing geo_tags"
-gzip -dc "$DOWNLOADED_PATH/geo_tags.sql.gz"          | mysql2pgsqlcmd | psqlcmd
 
-echo "Importing page"
-gzip -dc "$DOWNLOADED_PATH/page.sql.gz"              | mysql2pgsqlcmd | psqlcmd
+# -----------------------------------------------------------
+echo "Importing geo_tags.csv.gz";
 
-echo "Importing wb_items_per_site"
-gzip -dc "$DOWNLOADED_PATH/wb_items_per_site.sql.gz" | mysql2pgsqlcmd | psqlcmd
+echo "DROP TABLE IF EXISTS geo_tags;" | psqlcmd
+echo "CREATE TABLE geo_tags (
+        gt_id         bigint,
+        gt_lat        numeric(11,8),
+        gt_lon        numeric(11,8)
+    );" | psqlcmd
+
+
+echo "COPY geo_tags (gt_id, gt_lat, gt_lon)
+    FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/geo_tags.csv.gz'
+    DELIMITER ','
+    CSV
+    ;" | psqlcmd
 
 
 
+# -----------------------------------------------------------
+echo "Importing page.csv.gz";
+
+echo "DROP TABLE IF EXISTS page;" | psqlcmd
+echo "CREATE TABLE page (
+        page_id            bigint,
+        page_title         text
+    );" | psqlcmd
 
 
-echo "====================================================================="
-echo "Import wikidata places"
-echo "====================================================================="
+echo "COPY page (page_id, page_title)
+    FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/page.csv.gz'
+    DELIMITER ','
+    CSV
+    ;" | psqlcmd
 
+
+
+# -----------------------------------------------------------
+echo "Importing wb_items_per_site.csv.gz";
+
+echo "DROP TABLE IF EXISTS wb_items_per_site;" | psqlcmd
+echo "CREATE TABLE wb_items_per_site (
+        ips_item_id        integer,
+        ips_site_id        text,
+        ips_site_page      text
+    );" | psqlcmd
+
+echo "COPY wb_items_per_site (ips_item_id, ips_site_id, ips_site_page)
+    FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/wb_items_per_site.csv.gz'
+    DELIMITER ','
+    CSV
+    ;" | psqlcmd
+
+
+
+# -----------------------------------------------------------
+echo "Importing wikidata_place_dump.csv";
+
+echo "DROP TABLE IF EXISTS wikidata_place_dump;" | psqlcmd
 echo "CREATE TABLE wikidata_place_dump (
         item        text,
         instance_of text
-      );"  | psqlcmd
+      );" | psqlcmd
 
 echo "COPY wikidata_place_dump (item, instance_of)
       FROM '$DOWNLOADED_PATH_ABS/wikidata_place_dump.csv'
       DELIMITER ','
       CSV
-      ;"  | psqlcmd
+      ;" | psqlcmd
 
+
+
+# -----------------------------------------------------------
+echo "Importing wikidata_place_type_levels.csv";
+
+echo "DROP TABLE IF EXISTS wikidata_place_type_levels;" | psqlcmd
 echo "CREATE TABLE wikidata_place_type_levels (
         place_type text,
         level      integer

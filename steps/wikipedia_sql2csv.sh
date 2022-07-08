@@ -91,7 +91,7 @@ do
     gzip -9 > $CONVERTED_PATH/$LANG/langlinks.csv.gz
 
 
-    echo "[language $LANG] redirects table SQL => CSV"
+    echo "[language $LANG] redirect table SQL => CSV"
     # CREATE TABLE `redirect` (
     #   `rd_from`         int(8) unsigned   NOT NULL DEFAULT 0,
     #   `rd_namespace`    int(11)           NOT NULL DEFAULT 0,
@@ -112,7 +112,7 @@ do
     csvcut -c 1,3,2 | \
     grep -e ',0$' | \
     sed 's/,0$//' | \
-    gzip -9 > $CONVERTED_PATH/$LANG/redirects.csv.gz
+    gzip -9 > $CONVERTED_PATH/$LANG/redirect.csv.gz
 
     du -h $CONVERTED_PATH/$LANG/*
 done

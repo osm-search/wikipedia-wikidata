@@ -7,7 +7,7 @@ echo "====================================================================="
 # set defaults
 : ${BUILDID:=latest}
 # List of mirrors https://dumps.wikimedia.org/mirrors.html
-# Download using main dumps.wikimedia.org: 150 minutes, mirror: 40 minutes
+# Download using main dumps.wikimedia.org: 60 minutes, mirror: 20 minutes
 : ${WIKIMEDIA_HOST:=wikimedia.bringyour.com}
 # See list on https://wikimedia.bringyour.com/wikidatawiki/
 : ${WIKIDATA_DATE:=20220620}
