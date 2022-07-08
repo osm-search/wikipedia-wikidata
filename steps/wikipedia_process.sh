@@ -54,23 +54,23 @@ echo "Process language tables and associated pagelink counts"
 echo "====================================================================="
 
 
-for i in "${LANGUAGES_ARRAY[@]}"
+for LANG in "${LANGUAGES_ARRAY[@]}"
 do
     echo "Language: $i"
 
-    echo "DROP TABLE IF EXISTS ${i}pagelinkcount;" | psqlcmd
-    echo "CREATE TABLE ${i}pagelinkcount
+    echo "DROP TABLE IF EXISTS ${LANG}pagelinkcount;" | psqlcmd
+    echo "CREATE TABLE ${LANG}pagelinkcount
           AS
           SELECT pl_title AS title,
                  COUNT(*) AS count,
                  0::bigint as othercount
-          FROM ${i}pagelinks
+          FROM ${LANG}pagelinks
           WHERE pl_namespace = 0
           GROUP BY pl_title
           ;" | psqlcmd
 
     echo "INSERT INTO linkcounts
-          SELECT '${i}',
+          SELECT '${LANG}',
                  pl_title,
                  COUNT(*)
           FROM ${i}pagelinks
@@ -79,11 +79,11 @@ do
           ;" | psqlcmd
 
     echo "INSERT INTO wikipedia_redirect
-          SELECT '${i}',
+          SELECT '${LANG}',
                  page_title,
                  rd_title
-          FROM ${i}redirect
-          JOIN ${i}page ON (rd_from = page_id)
+          FROM ${LANG}redirect
+          JOIN ${LANG}page ON (rd_from = page_id)
           WHERE page_namespace = 0
             AND rd_namespace = 0
           ;" | psqlcmd
@@ -91,25 +91,25 @@ do
 done
 
 
-for i in "${LANGUAGES_ARRAY[@]}"
+for LANG in "${LANGUAGES_ARRAY[@]}"
 do
-    for j in "${LANGUAGES_ARRAY[@]}"
+    for OTHERLANG in "${LANGUAGES_ARRAY[@]}"
     do
-        echo "UPDATE ${i}pagelinkcount
-              SET othercount = ${i}pagelinkcount.othercount + x.count
+        echo "UPDATE ${LANG}pagelinkcount
+              SET othercount = ${LANG}pagelinkcount.othercount + x.count
               FROM (
                 SELECT page_title AS title,
                        count
-                FROM ${i}langlinks
-                JOIN ${i}page ON (ll_from = page_id)
-                JOIN ${j}pagelinkcount ON (ll_lang = '${j}' AND ll_title = title)
+                FROM ${LANG}langlinks
+                JOIN ${LANG}page ON (ll_from = page_id)
+                JOIN ${OTHERLANG}pagelinkcount ON (ll_lang = '${OTHERLANG}' AND ll_title = title)
               ) AS x
-              WHERE x.title = ${i}pagelinkcount.title
+              WHERE x.title = ${LANG}pagelinkcount.title
               ;" | psqlcmd
     done
 
     echo "INSERT INTO wikipedia_article
-          SELECT '${i}',
+          SELECT '${LANG}',
                  title,
                  count,
                  othercount,
