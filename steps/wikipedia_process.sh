@@ -77,7 +77,7 @@ do
           SELECT '${LANG}',
                  pl_title,
                  COUNT(*)
-          FROM ${i}pagelinks
+          FROM ${LANG}pagelinks
           GROUP BY pl_title
           ;" | psqlcmd
 
@@ -115,7 +115,7 @@ do
                  count,
                  othercount,
                  count + othercount
-          FROM ${i}pagelinkcount
+          FROM ${LANG}pagelinkcount
           ;" | psqlcmd
 done
 
