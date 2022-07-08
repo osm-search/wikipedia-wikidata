@@ -1,1 +1,3 @@
 https://github.com/jamesmishra/mysqldump-to-csv
+
+* Added errors=surrogateescape to open(), otherwise the script threw UnicodeDecodeError for langlinks files

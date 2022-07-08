@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-import fileinput
+# import fileinput
 import csv
 import sys
+import io
 
 # This prevents prematurely closed pipes from raising
 # an exception in Python
@@ -101,12 +102,16 @@ def main():
     # listed in sys.argv[1:]
     # or stdin if no args given.
     try:
-        for line in fileinput.input():
-            # Look for an INSERT statement and parse it.
-            if is_insert(line):
-                values = get_values(line)
-                if values_sanity_check(values):
-                    parse_values(values, sys.stdout)
+        # UPDATE: fileinput starts supporting 'errors' in Python 5.10. Until then
+        # call io.open() directly.
+        # for line in fileinput.input():
+        with io.open(sys.stdin.fileno(), 'r', encoding="utf-8", errors="surrogateescape") as file:
+            for line in file:
+                # Look for an INSERT statement and parse it.
+                if is_insert(line):
+                    values = get_values(line)
+                    if values_sanity_check(values):
+                        parse_values(values, sys.stdout)
     except KeyboardInterrupt:
         sys.exit(0)
 
