@@ -35,7 +35,6 @@ do
 
     echo "COPY ${LANG}page (page_id, page_title)
         FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/pages.csv.gz'
-        DELIMITER ','
         CSV
         ;" | psqlcmd
 
@@ -51,7 +50,6 @@ do
 
     echo "COPY ${LANG}pagelinks (pl_title)
         FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/pagelinks.csv.gz'
-        DELIMITER ','
         CSV
         ;" | psqlcmd
 
@@ -68,7 +66,6 @@ do
 
     echo "COPY ${LANG}langlinks (ll_title, ll_from, ll_lang)
         FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/langlinks.csv.gz'
-        DELIMITER ','
         CSV
         ;" | psqlcmd
 
@@ -84,7 +81,6 @@ do
 
     echo "COPY ${LANG}redirect (rd_from, rd_title)
         FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/redirect.csv.gz'
-        DELIMITER ','
         CSV
         ;" | psqlcmd
 

@@ -26,20 +26,25 @@ echo "CREATE TABLE linkcounts (
         lon      double precision
      );"  | psqlcmd
 
+# osm_type, osm_id will never be filled and Nominatim doesn't use them
 echo "DROP TABLE IF EXISTS wikipedia_article;" | psqlcmd
 echo "CREATE TABLE wikipedia_article (
-        language    text NOT NULL,
-        title       text NOT NULL,
-        langcount   integer,
-        othercount  integer,
-        totalcount  integer,
-        lat double  precision,
-        lon double  precision,
-        importance  double precision,
-        title_en    text,
-        osm_type    character(1),
-        osm_id      bigint
+        language       text NOT NULL,
+        title          text NOT NULL,
+        langcount      integer,
+        othercount     integer,
+        totalcount     integer,
+        lat            double  precision,
+        lon            double  precision,
+        importance     double precision,
+        title_en       text,
+        osm_type       character(1),
+        osm_id         bigint,
+        wd_page_title  text,
+        instance_of    text
       );" | psqlcmd
+
+
 
 echo "DROP TABLE IF EXISTS wikipedia_redirect;" | psqlcmd
 echo "CREATE TABLE wikipedia_redirect (
@@ -65,7 +70,6 @@ do
                  COUNT(*) AS count,
                  0::bigint as othercount
           FROM ${LANG}pagelinks
-          WHERE pl_namespace = 0
           GROUP BY pl_title
           ;" | psqlcmd
 
@@ -74,7 +78,6 @@ do
                  pl_title,
                  COUNT(*)
           FROM ${i}pagelinks
-          WHERE pl_namespace = 0
           GROUP BY pl_title
           ;" | psqlcmd
 
@@ -84,8 +87,6 @@ do
                  rd_title
           FROM ${LANG}redirect
           JOIN ${LANG}page ON (rd_from = page_id)
-          WHERE page_namespace = 0
-            AND rd_namespace = 0
           ;" | psqlcmd
 
 done

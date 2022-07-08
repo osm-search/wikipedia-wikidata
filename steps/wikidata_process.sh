@@ -22,34 +22,17 @@ echo "====================================================================="
 echo "Create derived tables"
 echo "====================================================================="
 
-echo "DROP TABLE IF EXISTS geo_earth_primary;" | psqlcmd
-echo "CREATE TABLE geo_earth_primary AS
-      SELECT gt_page_id,
-             gt_lat,
-             gt_lon
-      FROM geo_tags
-      WHERE gt_globe = 'earth'
-        AND gt_primary = 1
-        AND NOT(    gt_lat < -90
-                 OR gt_lat > 90
-                 OR gt_lon < -180
-                 OR gt_lon > 180
-                 OR gt_lat=0
-                 OR gt_lon=0)
-      ;" | psqlcmd
-
 
 echo "DROP TABLE IF EXISTS geo_earth_wikidata;" | psqlcmd
 echo "CREATE TABLE geo_earth_wikidata AS
-      SELECT DISTINCT geo_earth_primary.gt_page_id,
-                      geo_earth_primary.gt_lat,
-                      geo_earth_primary.gt_lon,
-                      page.page_title,
-                      page.page_namespace
-      FROM geo_earth_primary
+      SELECT DISTINCT geo_tags.gt_page_id,
+                      geo_tags.gt_lat,
+                      geo_tags.gt_lon,
+                      page.page_title
+      FROM geo_tags
       LEFT OUTER JOIN page
-                   ON (geo_earth_primary.gt_page_id = page.page_id)
-      ORDER BY geo_earth_primary.gt_page_id
+                   ON (geo_tags.gt_page_id = page.page_id)
+      ORDER BY geo_tags.gt_page_id
       ;" | psqlcmd
 
 echo "ALTER TABLE wikidata_place_dump
@@ -159,14 +142,6 @@ echo "ALTER TABLE wikidata_pages
 echo "====================================================================="
 echo "Add wikidata to wikipedia_article table"
 echo "====================================================================="
-
-echo "ALTER TABLE wikipedia_article
-      ADD COLUMN wd_page_title text
-      ;" | psqlcmd
-
-echo "ALTER TABLE wikipedia_article
-      ADD COLUMN instance_of text
-      ;" | psqlcmd
 
 echo "UPDATE wikipedia_article
       SET lat = wikidata_pages.lat,
