@@ -26,4 +26,5 @@ createdb $DATABASE_NAME
 ./steps/wikipedia_process.sh
 ./steps/wikidata_process.sh
 
-./steps/cleanup.sh
+./steps/output.sh
+# ./steps/cleanup.sh
