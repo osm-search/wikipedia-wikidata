@@ -20,11 +20,11 @@ DOWNLOADED_PATH="$BUILDID/downloaded/wikipedia"
 
 
 download() {
+    echo "Downloading $1 > $2"
     if [ -e "$2" ]; then
         echo "file $2 already exists, skipping"
         return
     fi
-    echo "Downloading $1 > $2"
     header='--header=User-Agent:Osm-search-Bot/1(https://github.com/osm-search/wikipedia-wikidata)'
     wget -O "$2" --quiet $header --no-clobber --tries=3 "$1"
     if [ ! -s "$2" ]; then
@@ -53,8 +53,18 @@ do
     # 106M  downloaded/tr/langlinks.sql.gz
     # 3.2M  downloaded/tr/redirect.sql.gz
 
-    download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-page.sql.gz      "$DOWNLOADED_PATH/$LANG/page.sql.gz"
-    download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-pagelinks.sql.gz "$DOWNLOADED_PATH/$LANG/pagelinks.sql.gz"
-    download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-langlinks.sql.gz "$DOWNLOADED_PATH/$LANG/langlinks.sql.gz"
-    download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-redirect.sql.gz  "$DOWNLOADED_PATH/$LANG/redirect.sql.gz"
+  
+    for FN in page.sql.gz pagelinks.sql.gz langlinks.sql.gz redirect.sql.gz; do
+
+        download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-$FN             "$DOWNLOADED_PATH/$LANG/$FN"
+        download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/md5sums-${LANG}wiki-$WIKIPEDIA_DATE-$FN.txt "$DOWNLOADED_PATH/$LANG/$FN.md5"
+
+        EXPECTED_MD5=$(cat "$DOWNLOADED_PATH/$LANG/$FN.md5"  | cut -d\  -f1)
+        CALCULATED_MD5=$(md5sum "$DOWNLOADED_PATH/$LANG/$FN" | cut -d\  -f1)
+
+        if [[ "$EXPECTED_MD5" != "$CALCULATED_MD5" ]]; then
+            echo "$FN for language $LANG - md5 checksum doesn't match, download broken"
+            exit 1
+        fi
+    done
 done
