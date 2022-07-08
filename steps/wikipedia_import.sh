@@ -6,148 +6,86 @@
 : ${LANGUAGES:=bar,cy}
 LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
-DOWNLOADED_PATH="$BUILDID/downloaded/wikipedia"
+CONVERTED_PATH="$BUILDID/converted/wikipedia"
+# postgresql's COPY requires full path
+CONVERTED_PATH_ABS=$(realpath "$CONVERTED_PATH")
 
 psqlcmd() {
      psql --quiet $DATABASE_NAME |& \
-     grep -v 'does not exist, skipping' |& \
-     grep -v 'violates check constraint' |& \
-     grep -vi 'Failing row contains'
+     grep -v 'does not exist, skipping'
 }
-
-mysql2pgsqlcmd() {
-     ./bin/mysql2pgsql.perl --nodrop /dev/stdin /dev/stdout
-}
-
-
-
-
-
-
-
-
 
 echo "====================================================================="
-echo "Import individual wikipedia language tables"
+echo "Import wikipedia CSV tables"
 echo "====================================================================="
 
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
-    echo "Import language: $LANG"
+    echo "Language: $LANG"
+
+    # -----------------------------------------------------------
+    echo "Importing pages.csv.gz";
+
+    echo "DROP TABLE IF EXISTS ${LANG}page;" | psqlcmd
+    echo "CREATE TABLE ${LANG}page (
+            page_id            integer,
+            page_title         text
+        );" | psqlcmd
 
 
-    # We pre-create the table schema. This allows us to
-    # 1. Skip index creation. Most queries we do are full table scans
-    # 2. Add constrain to only import namespace=0 (wikipedia articles)
-    # Both cuts down data size considerably (50%+)
-
-
-    ##
-    ## PAGELINKS
-    ##
-    FILENAME="$DOWNLOADED_PATH/$LANG/pagelinks.sql.gz"
-    TABLENAME="${LANG}pagelinks"
-
-    echo "Importing $FILENAME"
-
-    echo "DROP TABLE IF EXISTS ${TABLENAME};" | psqlcmd
-    echo "CREATE TABLE ${TABLENAME} (
-       pl_from            int  NOT NULL DEFAULT '0',
-       pl_namespace       int  NOT NULL DEFAULT '0',
-       pl_title           text NOT NULL DEFAULT '',
-       pl_from_namespace  int  NOT NULL DEFAULT '0'
-    );" | psqlcmd
-
-    time \
-      gzip -dc ${FILENAME} | \
-      sed "s/\`pagelinks\`/\`${TABLENAME}\`/g" | \
-      mysql2pgsqlcmd | \
-      grep -v '^CREATE INDEX ' | \
-      psqlcmd
-
-
-    ##
-    ## PAGE
-    ##
-    FILENAME="$DOWNLOADED_PATH/$LANG/page.sql.gz"
-    TABLENAME="${LANG}page"
-
-    echo "Importing $FILENAME"
-
-    # autoincrement serial8 4byte
-    echo "DROP TABLE IF EXISTS ${TABLENAME};" | psqlcmd
-    echo "CREATE TABLE ${TABLENAME} (
-       page_id             int NOT NULL,
-       page_namespace      int NOT NULL DEFAULT '0',
-       page_title          text NOT NULL DEFAULT '',
-       page_is_redirect    smallint NOT NULL DEFAULT '0',
-       page_is_new         smallint NOT NULL DEFAULT '0',
-       page_random         double precision NOT NULL DEFAULT '0',
-       page_touched        text NOT NULL DEFAULT '',
-       page_links_updated  text DEFAULT NULL,
-       page_latest         int NOT NULL DEFAULT '0',
-       page_len            int NOT NULL DEFAULT '0',
-       page_content_model  text DEFAULT NULL,
-       page_lang           text DEFAULT NULL
-     );" | psqlcmd
-
-    time \
-      gzip -dc ${FILENAME} | \
-      sed "s/\`page\`/\`${TABLENAME}\`/g" | \
-      mysql2pgsqlcmd | \
-      grep -v '^CREATE INDEX ' | \
-      psqlcmd
+    echo "COPY ${LANG}page (page_id, page_title)
+        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/pages.csv.gz'
+        DELIMITER ','
+        CSV
+        ;" | psqlcmd
 
 
 
-    ##
-    ## LANGLINKS
-    ##
-    FILENAME="$DOWNLOADED_PATH/$LANG/langlinks.sql.gz"
-    TABLENAME="${LANG}langlinks"
+    # -----------------------------------------------------------
+    echo "Importing pagelinks.csv.gz";
 
-    echo "Importing $FILENAME"
+    echo "DROP TABLE IF EXISTS ${LANG}pagelinks;" | psqlcmd
+    echo "CREATE TABLE ${LANG}pagelinks (
+            pl_title          text
+        );" | psqlcmd
 
-    echo "DROP TABLE IF EXISTS ${TABLENAME};" | psqlcmd
-    echo "CREATE TABLE ${TABLENAME} (
-       ll_from   int  NOT NULL DEFAULT '0',
-       ll_lang   text NOT NULL DEFAULT '',
-       ll_title  text NOT NULL DEFAULT ''
-    );" | psqlcmd
-
-    time \
-      gzip -dc ${FILENAME} | \
-      sed "s/\`langlinks\`/\`${TABLENAME}\`/g" | \
-      mysql2pgsqlcmd | \
-      grep -v '^CREATE INDEX ' | \
-      psqlcmd
+    echo "COPY ${LANG}pagelinks (pl_title)
+        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/pagelinks.csv.gz'
+        DELIMITER ','
+        CSV
+        ;" | psqlcmd
 
 
+    # -----------------------------------------------------------
+    echo "Importing langlinks.csv.gz";
 
-    ##
-    ## REDIRECT
-    ##
-    FILENAME="$DOWNLOADED_PATH/$LANG/redirect.sql.gz"
-    TABLENAME="${LANG}redirect"
+    echo "DROP TABLE IF EXISTS ${LANG}langlinks;" | psqlcmd
+    echo "CREATE TABLE ${LANG}langlinks (
+            ll_from    integer,
+            ll_lang    text,
+            ll_title   text
+        );" | psqlcmd
 
-    echo "Importing $FILENAME"
+    echo "COPY ${LANG}langlinks (ll_title, ll_from, ll_lang)
+        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/langlinks.csv.gz'
+        DELIMITER ','
+        CSV
+        ;" | psqlcmd
 
-    echo "DROP TABLE IF EXISTS ${TABLENAME};" | psqlcmd
-    echo "CREATE TABLE ${TABLENAME} (
-       rd_from       int   NOT NULL DEFAULT '0',
-       rd_namespace  int   NOT NULL DEFAULT '0',
-       rd_title      text  NOT NULL DEFAULT '',
-       rd_interwiki  text  DEFAULT NULL,
-       rd_fragment   text  DEFAULT NULL
-    );" | psqlcmd
 
-    time \
-      gzip -dc ${FILENAME} | \
-      sed "s/\`redirect\`/\`${TABLENAME}\`/g" | \
-      mysql2pgsqlcmd | \
-      grep -v '^CREATE INDEX ' | \
-      psqlcmd
+    # -----------------------------------------------------------
+    echo "Importing redirects.csv.gz";
+
+    echo "DROP TABLE IF EXISTS ${LANG}redirect;" | psqlcmd
+    echo "CREATE TABLE ${LANG}redirect (
+            rd_from    integer,
+            rd_title   text
+        );" | psqlcmd
+
+    echo "COPY ${LANG}redirect (rd_from, rd_title)
+        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/redirect.csv.gz'
+        DELIMITER ','
+        CSV
+        ;" | psqlcmd
+
 done
-
-
-
