@@ -125,10 +125,10 @@ echo "Add wikidata to wikipedia_article table"
 echo "====================================================================="
 
 echo "UPDATE wikipedia_article
-      SET lat = wikidata_pages.lat,
-          lon = wikidata_pages.lon,
+      SET lat           = wikidata_pages.lat,
+          lon           = wikidata_pages.lon,
           wd_page_title = wikidata_pages.item,
-          instance_of = wikidata_pages.instance_of
+          instance_of   = wikidata_pages.instance_of
       FROM wikidata_pages
       WHERE wikipedia_article.language = wikidata_pages.language
         AND wikipedia_article.title  = wikidata_pages.wp_page_title
