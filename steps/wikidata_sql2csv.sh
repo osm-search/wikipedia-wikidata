@@ -49,7 +49,7 @@ gzip -9 \
 # Output
 #   89 MB (240 MB uncompressed)
 #   8.4m entries
-#   columns: page_id, lat, lon
+#   columns: gt_page_id, gt_lat, gt_lon
 # 4175,43.1924,-81.3158
 # 4180,-26.0,121.0
 # 4181,43.08333333,2.41666667
