@@ -74,7 +74,7 @@ echo "COPY wb_items_per_site (ips_item_id, ips_site_id, ips_site_page)
 
 
 # -----------------------------------------------------------
-echo "Importing wikidata_place_dump from $DOWNLOADED_PATH_ABS/wikidata_place_dump.csv";
+echo "Importing wikidata_place_dump from $DOWNLOADED_PATH_ABS/wikidata_place_dump.csv.gz";
 
 echo "DROP TABLE IF EXISTS wikidata_place_dump;" | psqlcmd
 echo "CREATE TABLE wikidata_place_dump (
@@ -83,7 +83,7 @@ echo "CREATE TABLE wikidata_place_dump (
       );" | psqlcmd
 
 echo "COPY wikidata_place_dump (item, instance_of)
-      FROM '$DOWNLOADED_PATH_ABS/wikidata_place_dump.csv'
+      FROM PROGRAM 'zcat $DOWNLOADED_PATH_ABS/wikidata_place_dump.csv.gz'
       CSV
       ;" | psqlcmd
 
