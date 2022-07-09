@@ -57,7 +57,7 @@ pg_dump -d $DATABASE_NAME -t wikipedia_article_slim -t wikipedia_redirect_slim |
         grep -v '\-\- ' | \
         sed 's/public.wikipedia_article_slim/wikipedia_article/' | \
         sed 's/public.wikipedia_redirect_slim/wikipedia_redirect/' | \
-        gzip -9 > "$OUTPUT_PATH/wikipedia_importance.sql.gz"
+        gzip -f -9 > "$OUTPUT_PATH/wikipedia_importance.sql.gz"
 
 echo "Create wikipedia_article.csv.gz"
 
@@ -68,7 +68,7 @@ echo "COPY wikipedia_article_slim
       DELIMITER ','
       HEADER;" | psqlcmd
 
-gzip -9 "$OUTPUT_PATH_ABS/wikipedia_article.csv"
+gzip -f -9 "$OUTPUT_PATH_ABS/wikipedia_article.csv"
 
 
 echo "Create wikipedia_redirect.csv.gz"
@@ -79,7 +79,7 @@ echo "COPY wikipedia_redirect_slim
       DELIMITER ','
       HEADER;" | psqlcmd
 
-gzip -9 "$OUTPUT_PATH_ABS/wikipedia_redirect.csv"
+gzip -f -9 "$OUTPUT_PATH_ABS/wikipedia_redirect.csv"
 
 
 du -h $OUTPUT_PATH/*
