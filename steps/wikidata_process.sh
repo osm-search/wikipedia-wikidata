@@ -86,7 +86,7 @@ echo "CREATE TABLE wikidata_pages (
         instance_of   text,
         lat           numeric(11,8),
         lon           numeric(11,8),
-        ips_site_page text,
+        wp_page_title text,
         language      text
       );" | psqlcmd
 
@@ -103,16 +103,7 @@ do
          LEFT JOIN wb_items_per_site
                 ON (CAST (( LTRIM(wikidata_places.item, 'Q')) AS INTEGER) = wb_items_per_site.ips_item_id)
          WHERE ips_site_id = '${LANG}wiki'
-           AND LEFT(wikidata_places.item,1) = 'Q'
          ORDER BY wikidata_places.item
-         ;" | psqlcmd
-
-   echo "ALTER TABLE wikidata_${LANG}_pages
-         ADD COLUMN language text
-         ;" | psqlcmd
-
-   echo "UPDATE wikidata_${LANG}_pages
-         SET language = '${LANG}'
          ;" | psqlcmd
 
    echo "INSERT INTO wikidata_pages
@@ -120,21 +111,11 @@ do
                 instance_of,
                 lat,
                 lon,
-                ips_site_page,
-                language
+                REPLACE(ips_site_page, ' ', '_') as wp_page_title,
+                '${LANG}'
          FROM wikidata_${LANG}_pages
          ;" | psqlcmd
 done
-
-echo "ALTER TABLE wikidata_pages
-      ADD COLUMN wp_page_title text
-      ;" | psqlcmd
-echo "UPDATE wikidata_pages
-      SET wp_page_title = REPLACE(ips_site_page, ' ', '_')
-      ;" | psqlcmd
-echo "ALTER TABLE wikidata_pages
-      DROP COLUMN ips_site_page
-      ;" | psqlcmd
 
 
 

@@ -24,7 +24,7 @@ do
     echo "Language: $LANG"
 
     # -----------------------------------------------------------
-    echo "Importing pages.csv.gz";
+    echo "Importing ${LANG}page from $CONVERTED_PATH_ABS/$LANG/pages.csv.gz";
 
     echo "DROP TABLE IF EXISTS ${LANG}page;" | psqlcmd
     echo "CREATE TABLE ${LANG}page (
@@ -34,14 +34,14 @@ do
 
 
     echo "COPY ${LANG}page (page_id, page_title)
-        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/pages.csv.gz'
+        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/$LANG/pages.csv.gz'
         CSV
         ;" | psqlcmd
 
 
 
     # -----------------------------------------------------------
-    echo "Importing pagelinks.csv.gz";
+    echo "Importing ${LANG}pagelinks from $CONVERTED_PATH_ABS/$LANG/pagelinks.csv.gz";
 
     echo "DROP TABLE IF EXISTS ${LANG}pagelinks;" | psqlcmd
     echo "CREATE TABLE ${LANG}pagelinks (
@@ -49,13 +49,13 @@ do
         );" | psqlcmd
 
     echo "COPY ${LANG}pagelinks (pl_title)
-        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/pagelinks.csv.gz'
+        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/$LANG/pagelinks.csv.gz'
         CSV
         ;" | psqlcmd
 
 
     # -----------------------------------------------------------
-    echo "Importing langlinks.csv.gz";
+    echo "Importing ${LANG}langlinks from $CONVERTED_PATH_ABS/$LANG/langlinks.csv.gz";
 
     echo "DROP TABLE IF EXISTS ${LANG}langlinks;" | psqlcmd
     echo "CREATE TABLE ${LANG}langlinks (
@@ -65,13 +65,13 @@ do
         );" | psqlcmd
 
     echo "COPY ${LANG}langlinks (ll_title, ll_from, ll_lang)
-        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/langlinks.csv.gz'
+        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/$LANG/langlinks.csv.gz'
         CSV
         ;" | psqlcmd
 
 
     # -----------------------------------------------------------
-    echo "Importing redirects.csv.gz";
+    echo "Importing ${LANG}redirect from $CONVERTED_PATH_ABS/$LANG/redirects.csv.gz";
 
     echo "DROP TABLE IF EXISTS ${LANG}redirect;" | psqlcmd
     echo "CREATE TABLE ${LANG}redirect (
@@ -80,7 +80,7 @@ do
         );" | psqlcmd
 
     echo "COPY ${LANG}redirect (rd_from, rd_title)
-        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/${LANG}/redirect.csv.gz'
+        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/$LANG/redirect.csv.gz'
         CSV
         ;" | psqlcmd
 

@@ -61,7 +61,7 @@ echo "====================================================================="
 
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
-    echo "Language: $i"
+    echo "Language: $LANG"
 
     echo "DROP TABLE IF EXISTS ${LANG}pagelinkcount;" | psqlcmd
     echo "CREATE TABLE ${LANG}pagelinkcount

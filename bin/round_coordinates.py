@@ -13,11 +13,11 @@ for row in reader:
     lon = float(row['lon'])
 
     if (row['lat'] == 0 and row['lon'] == 0):
-        print('skipping 0,0', file=sys.stderr)
+        # print('skipping 0,0', file=sys.stderr)
         continue
 
     if (lat < -90 or lat > 90 or lon < -180 or lon > 180):
-        print('skipping out of bounds', file=sys.stderr)
+        # print('skipping out of bounds', file=sys.stderr)
         # print(lat, file=sys.stderr)
         # print(lon, file=sys.stderr)
         continue

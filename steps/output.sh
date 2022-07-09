@@ -12,7 +12,8 @@ chmod 777 "$OUTPUT_PATH"
 OUTPUT_PATH_ABS=$(realpath "$OUTPUT_PATH")
 
 psqlcmd() {
-     psql --quiet $DATABASE_NAME
+     psql --quiet $DATABASE_NAME |& \
+     grep -v 'does not exist, skipping'
 }
 
 
