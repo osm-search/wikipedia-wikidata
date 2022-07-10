@@ -48,10 +48,29 @@ echo "CREATE TABLE wikipedia_redirect_slim
 
 # 13m rows
 
+echo "Create table indexes"
+echo "CREATE INDEX wikipedia_article_osm_type_osm_id_idx
+      ON wikipedia_article_slim
+      (osm_type, osm_id)
+      WHERE (osm_type IS NOT NULL)
+      ;" | psqlcmd
+echo "CREATE INDEX wikipedia_article_slim_title_language_idx
+      ON wikipedia_article_slim
+      (title, language)
+      ;" | psqlcmd
+echo "CREATE INDEX wikipedia_article_wd_page_title_idx
+      ON wikipedia_article_slim
+      (wd_page_title)
+      ;" | psqlcmd
+echo "CREATE INDEX wikipedia_redirect_language_from_title_idx
+      ON wikipedia_redirect_slim
+      (language, from_title)
+      ;" | psqlcmd
+
 
 echo "Create wikipedia_importance.sql.gz"
 
-pg_dump -d $DATABASE_NAME -t wikipedia_article_slim -t wikipedia_redirect_slim | \
+pg_dump -d $DATABASE_NAME --no-owner -t wikipedia_article_slim -t wikipedia_redirect_slim | \
         grep -v '^SET ' | \
         grep -v 'SELECT ' | \
         grep -v '\-\- ' | \
