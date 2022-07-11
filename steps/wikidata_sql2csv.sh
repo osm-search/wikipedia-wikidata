@@ -34,14 +34,14 @@ echo "wikidata_sql2csv geo_tags"
 
 # Remove anything globe!=earth, primary!=1
 # Round the coordinates
-zcat $DOWNLOADED_PATH/geo_tags.sql.gz | \
+unpigz -c $DOWNLOADED_PATH/geo_tags.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
 sed 's/\x0//g' | \
 sed 's/\r\?//g' | \
 grep ',earth,1,' | \
 csvcut -c 2,5,6 | \
 bin/round_coordinates.py | \
-gzip -9 \
+pigz -9 \
 > $CONVERTED_PATH/geo_tags.csv.gz
 
 # Input
@@ -84,7 +84,7 @@ echo "wikidata_sql2csv page"
 # page_lang isn't interesting, 'NULL' 99.999% of the time
 # Remove all page_title that don't start with 'Q'
 
-zcat $DOWNLOADED_PATH/page.sql.gz | \
+unpigz -c $DOWNLOADED_PATH/page.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
 sed 's/\x0//g' | \
 sed 's/\r\?//g' | \
@@ -92,7 +92,7 @@ csvcut -c 1,3,2 | \
 grep -e ',0$' | \
 sed 's/,0$//' | \
 grep ',Q' | \
-gzip -9 \
+pigz -9 \
 > $CONVERTED_PATH/page.csv.gz
 
 # 34min
@@ -134,13 +134,13 @@ LISTLANG=${LANGUAGES_ARRAY[@]}
 LANG_E_REGEX=",\(${LISTLANG// /\\|}\)wiki,"
 # ,\(ar\|bg\|ca\|cs\|da\|de\|en...\)wiki,
 
-zcat $DOWNLOADED_PATH/wb_items_per_site.sql.gz | \
+unpigz -c $DOWNLOADED_PATH/wb_items_per_site.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
 sed 's/\x0//g' | \
 sed 's/\r\?//g' | \
 grep -e "$LANG_E_REGEX" | \
 csvcut -c 2,3,4 | \
-gzip -9 \
+pigz -9 \
 > $CONVERTED_PATH/wb_items_per_site.csv.gz
 
 # Input

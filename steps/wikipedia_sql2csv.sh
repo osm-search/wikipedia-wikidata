@@ -38,14 +38,14 @@ do
     #   output 190MB compressed
     # Output columns: page_id, page_title
 
-    zcat $DOWNLOADED_PATH/${LANG}/page.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/${LANG}/page.sql.gz | \
     python3 bin/mysqldump_to_csv.py | \
     sed 's/\x0//g' | \
     sed 's/\r\?//g' | \
     csvcut -c 1,3,2 | \
     grep -e ',0$' | \
     sed 's/,0$//' | \
-    gzip -9 > $CONVERTED_PATH/$LANG/pages.csv.gz
+    pigz -9 > $CONVERTED_PATH/$LANG/pages.csv.gz
 
 
     echo "[language $LANG] Pagelinks table SQL => CSV"
@@ -61,7 +61,7 @@ do
     #   output 450MB compressed (3.1GB uncompressed)
     # Output columns: pl_title
 
-    zcat $DOWNLOADED_PATH/${LANG}/pagelinks.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/${LANG}/pagelinks.sql.gz | \
     python3 bin/mysqldump_to_csv.py | \
     sed 's/\x0//g' | \
     sed 's/\r\?//g' | \
@@ -69,7 +69,7 @@ do
     grep -e ',0$' | \
     sed 's/,0$//' | \
     grep -v '^$' | \
-    gzip -9 > $CONVERTED_PATH/$LANG/pagelinks.csv.gz
+    pigz -9 > $CONVERTED_PATH/$LANG/pagelinks.csv.gz
 
 
     echo "[language $LANG] langlinks table SQL => CSV"
@@ -84,12 +84,12 @@ do
     #   input 400MB compressed (1.5GB uncompressed)
     #   output 380MB compressed (1.3GB uncompressed)
 
-    zcat $DOWNLOADED_PATH/${LANG}/langlinks.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/${LANG}/langlinks.sql.gz | \
     python3 bin/mysqldump_to_csv.py | \
     sed 's/\x0//g' | \
     sed 's/\r\?//g' | \
     csvcut -c 3,1,2 | \
-    gzip -9 > $CONVERTED_PATH/$LANG/langlinks.csv.gz
+    pigz -9 > $CONVERTED_PATH/$LANG/langlinks.csv.gz
 
 
     echo "[language $LANG] redirect table SQL => CSV"
@@ -106,14 +106,14 @@ do
     #   input 140MB compressed (530MB uncompressed)
     #   output 100MB compressed (300MB uncompressed)
 
-    zcat $DOWNLOADED_PATH/${LANG}/redirect.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/${LANG}/redirect.sql.gz | \
     python3 bin/mysqldump_to_csv.py | \
     sed 's/\x0//g' | \
     sed 's/\r\?//g' | \
     csvcut -c 1,3,2 | \
     grep -e ',0$' | \
     sed 's/,0$//' | \
-    gzip -9 > $CONVERTED_PATH/$LANG/redirect.csv.gz
+    pigz -9 > $CONVERTED_PATH/$LANG/redirect.csv.gz
 
     du -h $CONVERTED_PATH/$LANG/*
 done

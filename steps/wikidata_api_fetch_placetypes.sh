@@ -121,7 +121,7 @@ done < config/wikidata_place_types.txt
 # 470MB compressed 72MB
 grep '^Q' $DOWNLOADED_PATH/wikidata_place_dump.csv | \
 uniq | \
-gzip -f -9 > $DOWNLOADED_PATH/wikidata_place_dump.csv.gz
+pigz -f -9 > $DOWNLOADED_PATH/wikidata_place_dump.csv.gz
 
 cp config/wikidata_place_type_levels.csv $DOWNLOADED_PATH
 # temp should be empty but if not then that should be fine, too
