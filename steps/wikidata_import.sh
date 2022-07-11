@@ -33,7 +33,7 @@ echo "CREATE TABLE geo_tags (
 
 
 echo "COPY geo_tags (gt_page_id, gt_lat, gt_lon)
-    FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/geo_tags.csv.gz'
+    FROM PROGRAM 'unpigz -c $CONVERTED_PATH_ABS/geo_tags.csv.gz'
     CSV
     ;" | psqlcmd
 
@@ -50,7 +50,7 @@ echo "CREATE TABLE page (
 
 
 echo "COPY page (page_id, page_title)
-    FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/page.csv.gz'
+    FROM PROGRAM 'unpigz -c $CONVERTED_PATH_ABS/page.csv.gz'
     CSV
     ;" | psqlcmd
 
@@ -67,7 +67,7 @@ echo "CREATE TABLE wb_items_per_site (
     );" | psqlcmd
 
 echo "COPY wb_items_per_site (ips_item_id, ips_site_id, ips_site_page)
-    FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/wb_items_per_site.csv.gz'
+    FROM PROGRAM 'unpigz -c $CONVERTED_PATH_ABS/wb_items_per_site.csv.gz'
     CSV
     ;" | psqlcmd
 
@@ -83,7 +83,7 @@ echo "CREATE TABLE wikidata_place_dump (
       );" | psqlcmd
 
 echo "COPY wikidata_place_dump (item, instance_of)
-      FROM PROGRAM 'zcat $DOWNLOADED_PATH_ABS/wikidata_place_dump.csv.gz'
+      FROM PROGRAM 'unpigz -c $DOWNLOADED_PATH_ABS/wikidata_place_dump.csv.gz'
       CSV
       ;" | psqlcmd
 

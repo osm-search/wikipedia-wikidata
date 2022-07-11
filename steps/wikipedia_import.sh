@@ -34,7 +34,7 @@ do
 
 
     echo "COPY ${LANG}page (page_id, page_title)
-        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/$LANG/pages.csv.gz'
+        FROM PROGRAM 'unpigz -c $CONVERTED_PATH_ABS/$LANG/pages.csv.gz'
         CSV
         ;" | psqlcmd
 
@@ -49,7 +49,7 @@ do
         );" | psqlcmd
 
     echo "COPY ${LANG}pagelinks (pl_title)
-        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/$LANG/pagelinks.csv.gz'
+        FROM PROGRAM 'unpigz -c $CONVERTED_PATH_ABS/$LANG/pagelinks.csv.gz'
         CSV
         ;" | psqlcmd
 
@@ -65,7 +65,7 @@ do
         );" | psqlcmd
 
     echo "COPY ${LANG}langlinks (ll_title, ll_from, ll_lang)
-        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/$LANG/langlinks.csv.gz'
+        FROM PROGRAM 'unpigz -c $CONVERTED_PATH_ABS/$LANG/langlinks.csv.gz'
         CSV
         ;" | psqlcmd
 
@@ -80,7 +80,7 @@ do
         );" | psqlcmd
 
     echo "COPY ${LANG}redirect (rd_from, rd_title)
-        FROM PROGRAM 'zcat $CONVERTED_PATH_ABS/$LANG/redirect.csv.gz'
+        FROM PROGRAM 'unpigz -c $CONVERTED_PATH_ABS/$LANG/redirect.csv.gz'
         CSV
         ;" | psqlcmd
 
