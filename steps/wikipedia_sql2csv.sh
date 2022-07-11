@@ -68,6 +68,7 @@ do
     csvcut -c 3,2 | \
     grep -e ',0$' | \
     sed 's/,0$//' | \
+    grep -v '^$' | \
     gzip -9 > $CONVERTED_PATH/$LANG/pagelinks.csv.gz
 
 
