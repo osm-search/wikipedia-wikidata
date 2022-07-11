@@ -12,40 +12,10 @@ psqlcmd() {
      grep -v 'does not exist, skipping'
 }
 
+
 echo "====================================================================="
-echo "Create wikipedia calculation tables"
+echo "Create and fill wikipedia_redirect"
 echo "====================================================================="
-
-echo "DROP TABLE IF EXISTS linkcounts;" | psqlcmd
-echo "CREATE TABLE linkcounts (
-        language text,
-        title    text,
-        count    integer,
-        sumcount integer,
-        lat      double precision,
-        lon      double precision
-     );"  | psqlcmd
-
-# osm_type, osm_id will never be filled and Nominatim doesn't use them
-echo "DROP TABLE IF EXISTS wikipedia_article;" | psqlcmd
-echo "CREATE TABLE wikipedia_article (
-        language       text NOT NULL,
-        title          text NOT NULL,
-        langcount      integer,
-        othercount     integer,
-        totalcount     integer,
-        lat            double  precision,
-        lon            double  precision,
-        importance     double precision,
-        title_en       text,
-        osm_type       character(1),
-        osm_id         bigint,
-        wd_page_title  text,
-        instance_of    text
-      );" | psqlcmd
-
-
-
 echo "DROP TABLE IF EXISTS wikipedia_redirect;" | psqlcmd
 echo "CREATE TABLE wikipedia_redirect (
         language   text,
@@ -53,12 +23,34 @@ echo "CREATE TABLE wikipedia_redirect (
         to_title   text
      );" | psqlcmd
 
+for LANG in "${LANGUAGES_ARRAY[@]}"
+do
+    echo "INSERT INTO wikipedia_redirect
+          SELECT '${LANG}',
+                 page_title,
+                 rd_title
+          FROM ${LANG}redirect
+          JOIN ${LANG}page ON (rd_from = page_id)
+          ;" | psqlcmd
+done
+
+
+
+
 
 echo "====================================================================="
 echo "Process language tables and associated pagelink counts"
 echo "====================================================================="
 
+echo "DROP TABLE IF EXISTS linkcounts;" | psqlcmd
+echo "CREATE TABLE linkcounts (
+        language text,
+        title    text,
+        count    integer,
+        sumcount integer
+     );"  | psqlcmd
 
+echo "set counts"
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
     echo "Language: $LANG"
@@ -80,20 +72,14 @@ do
           FROM ${LANG}pagelinks
           GROUP BY pl_title
           ;" | psqlcmd
-
-    echo "INSERT INTO wikipedia_redirect
-          SELECT '${LANG}',
-                 page_title,
-                 rd_title
-          FROM ${LANG}redirect
-          JOIN ${LANG}page ON (rd_from = page_id)
-          ;" | psqlcmd
-
 done
 
 
+echo "set othercounts"
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
+    echo "Language: $LANG"
+
     for OTHERLANG in "${LANGUAGES_ARRAY[@]}"
     do
         echo "UPDATE ${LANG}pagelinkcount
@@ -109,6 +95,34 @@ do
               ;" | psqlcmd
     done
 
+done
+
+
+
+echo "====================================================================="
+echo "Create and fill wikipedia_article"
+echo "====================================================================="
+
+# osm_type, osm_id will never be filled and Nominatim doesn't use them
+echo "DROP TABLE IF EXISTS wikipedia_article;" | psqlcmd
+echo "CREATE TABLE wikipedia_article (
+        language       text NOT NULL,
+        title          text NOT NULL,
+        langcount      integer,
+        othercount     integer,
+        totalcount     integer,
+        lat            double  precision,
+        lon            double  precision,
+        importance     double precision,
+        title_en       text,
+        osm_type       character(1),
+        osm_id         bigint,
+        wd_page_title  text,
+        instance_of    text
+      );" | psqlcmd
+
+for LANG in "${LANGUAGES_ARRAY[@]}"
+do
     echo "INSERT INTO wikipedia_article
           SELECT '${LANG}',
                  title,
@@ -121,14 +135,15 @@ done
 
 
 
-
-
 echo "====================================================================="
 echo "Calculate importance score for each wikipedia page"
 echo "====================================================================="
 
+# takes 3 minutes
 echo "UPDATE wikipedia_article
       SET importance = LOG(totalcount)/LOG((SELECT MAX(totalcount) FROM wikipedia_article))
       ;" | psqlcmd
 
 echo "done"
+
+

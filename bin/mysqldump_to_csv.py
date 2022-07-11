@@ -105,7 +105,7 @@ def main():
         # UPDATE: fileinput starts supporting 'errors' in Python 5.10. Until then
         # call io.open() directly.
         # for line in fileinput.input():
-        with io.open(sys.stdin.fileno(), 'r', encoding="utf-8", errors="surrogateescape") as file:
+        with io.open(sys.stdin.fileno(), 'r', encoding="utf-8", errors="ignore") as file:
             for line in file:
                 # Look for an INSERT statement and parse it.
                 if is_insert(line):
