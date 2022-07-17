@@ -121,17 +121,17 @@ done
 
 
 echo "====================================================================="
-echo "Add wikidata to wikipedia_article table"
+echo "Add wikidata to wikipedia_article_full table"
 echo "====================================================================="
 
-echo "UPDATE wikipedia_article
+echo "UPDATE wikipedia_article_full
       SET lat           = wikidata_pages.lat,
           lon           = wikidata_pages.lon,
           wd_page_title = wikidata_pages.item,
           instance_of   = wikidata_pages.instance_of
       FROM wikidata_pages
-      WHERE wikipedia_article.language = wikidata_pages.language
-        AND wikipedia_article.title  = wikidata_pages.wp_page_title
+      WHERE wikipedia_article_full.language = wikidata_pages.language
+        AND wikipedia_article_full.title  = wikidata_pages.wp_page_title
       ;" | psqlcmd
 
 # 35 minutes
