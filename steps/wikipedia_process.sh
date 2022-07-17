@@ -14,10 +14,10 @@ psqlcmd() {
 
 
 echo "====================================================================="
-echo "Create and fill wikipedia_redirect"
+echo "Create and fill wikipedia_redirect_full"
 echo "====================================================================="
-echo "DROP TABLE IF EXISTS wikipedia_redirect;" | psqlcmd
-echo "CREATE TABLE wikipedia_redirect (
+echo "DROP TABLE IF EXISTS wikipedia_redirect_full;" | psqlcmd
+echo "CREATE TABLE wikipedia_redirect_full (
         language   text,
         from_title text,
         to_title   text
@@ -25,7 +25,7 @@ echo "CREATE TABLE wikipedia_redirect (
 
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
-    echo "INSERT INTO wikipedia_redirect
+    echo "INSERT INTO wikipedia_redirect_full
           SELECT '${LANG}',
                  page_title,
                  rd_title
@@ -100,12 +100,12 @@ done
 
 
 echo "====================================================================="
-echo "Create and fill wikipedia_article"
+echo "Create and fill wikipedia_article_full"
 echo "====================================================================="
 
 # osm_type, osm_id will never be filled and Nominatim doesn't use them
-echo "DROP TABLE IF EXISTS wikipedia_article;" | psqlcmd
-echo "CREATE TABLE wikipedia_article (
+echo "DROP TABLE IF EXISTS wikipedia_article_full;" | psqlcmd
+echo "CREATE TABLE wikipedia_article_full (
         language       text NOT NULL,
         title          text NOT NULL,
         langcount      integer,
@@ -123,7 +123,7 @@ echo "CREATE TABLE wikipedia_article (
 
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
-    echo "INSERT INTO wikipedia_article
+    echo "INSERT INTO wikipedia_article_full
           SELECT '${LANG}',
                  title,
                  count,
@@ -140,8 +140,8 @@ echo "Calculate importance score for each wikipedia page"
 echo "====================================================================="
 
 # takes 3 minutes
-echo "UPDATE wikipedia_article
-      SET importance = LOG(totalcount)/LOG((SELECT MAX(totalcount) FROM wikipedia_article))
+echo "UPDATE wikipedia_article_full
+      SET importance = LOG(totalcount)/LOG((SELECT MAX(totalcount) FROM wikipedia_article_full))
       ;" | psqlcmd
 
 echo "done"
