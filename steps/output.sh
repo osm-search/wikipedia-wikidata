@@ -117,7 +117,7 @@ pg_dump -d $DATABASE_NAME --no-owner -t wikipedia_article -t wikipedia_redirect 
         grep -v '^SET ' | \
         grep -v 'SELECT ' | \
         grep -v '\-\- ' | \
-        sed 's/public\./' | \
+        sed 's/public\.//' | \
         pigz -f -9 > "$OUTPUT_PATH/wikipedia_importance.sql.gz"
 
 
@@ -126,7 +126,7 @@ echo "* wikipedia_article.csv.gz"
 
 rm -f "$OUTPUT_PATH_ABS/wikipedia_article.csv.gz"
 echo "COPY wikipedia_article
-      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikipedia_article.csv'
+      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikipedia_article.csv.gz'
       CSV
       HEADER;" | psqlcmd
 
@@ -136,7 +136,7 @@ echo "* wikipedia_redirect.csv.gz"
 
 rm -f "$OUTPUT_PATH_ABS/wikipedia_redirect.csv.gz"
 echo "COPY wikipedia_redirect
-      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikipedia_redirect.csv'
+      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikipedia_redirect.csv.gz'
       CSV
       HEADER;" | psqlcmd
 
@@ -146,13 +146,15 @@ echo "* wikimedia_importance.csv.gz"
 
 rm -f "$OUTPUT_PATH_ABS/wikimedia_importance.csv.gz"
 echo "COPY wikipedia_redirect
-      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikimedia_importance.csv'
+      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikimedia_importance.csv.gz'
       CSV
       HEADER;" | psqlcmd
 
+# postgresql owns the files it dumps via COPY
+chown "$USER" $OUTPUT_PATH/*.gz
 
 du -h $OUTPUT_PATH/*
-# 324M  output/wikipedia_article.csv.gz
-# 118M  output/wikipedia_redirect.csv.gz
-# ??? output/wikipedia_importance.sql.gz
-# ??? output/wikimedia_importance.csv.gz
+# 220M  wikipedia_article.csv.gz
+# 87M   wikipedia_redirect.csv.gz
+# 305M  wikipedia_importance.sql.gz
+# 87M   wikimedia_importance.csv.gz
