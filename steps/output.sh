@@ -145,7 +145,7 @@ echo "COPY wikipedia_redirect
 echo "* wikimedia_importance.csv.gz"
 
 rm -f "$OUTPUT_PATH_ABS/wikimedia_importance.csv.gz"
-echo "COPY wikipedia_redirect
+echo "COPY wikimedia_importance
       TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikimedia_importance.csv.gz'
       CSV
       HEADER;" | psqlcmd
