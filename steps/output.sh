@@ -42,7 +42,7 @@ echo "CREATE TABLE wikipedia_article
 # 9.2m rows
 
 echo "* wikipedia_redirect (Less rows than wikipedia_redirect_full)"
-# Remove rows that don't point to titles in wikidata_article)"
+# Remove rows that don't point to titles in wikipedia_article)"
 
 echo "DROP TABLE IF EXISTS wikipedia_redirect;" | psqlcmd
 echo "CREATE TABLE wikipedia_redirect
@@ -151,7 +151,7 @@ echo "COPY wikimedia_importance
       HEADER;" | psqlcmd
 
 # postgresql owns the files it dumps via COPY
-chown "$USER" $OUTPUT_PATH/*.gz
+sudo chown "$USER" $OUTPUT_PATH/*.gz
 
 du -h $OUTPUT_PATH/*
 # 220M  wikipedia_article.csv.gz
