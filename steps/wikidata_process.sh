@@ -138,3 +138,21 @@ echo "UPDATE wikipedia_article_full
 # 166m rows
 
 
+echo "====================================================================="
+echo "Calculate importance score for each wikipedia page"
+echo "====================================================================="
+
+# takes 3 minutes
+# 'greatest' because log(1)/<any number> is always 0
+echo "UPDATE wikipedia_article_full
+      SET importance = GREATEST(
+                          LOG(totalcount)
+                          /
+                          LOG((
+                            SELECT MAX(totalcount)
+                            FROM wikipedia_article_full
+                            WHERE wd_page_title IS NOT NULL
+                          )),
+                          0.0000000001
+                       )
+      ;" | psqlcmd

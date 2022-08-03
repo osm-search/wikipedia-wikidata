@@ -134,16 +134,6 @@ do
 done
 
 
-
-echo "====================================================================="
-echo "Calculate importance score for each wikipedia page"
-echo "====================================================================="
-
-# takes 3 minutes
-echo "UPDATE wikipedia_article_full
-      SET importance = LOG(totalcount)/LOG((SELECT MAX(totalcount) FROM wikipedia_article_full))
-      ;" | psqlcmd
-
 echo "done"
 
 
