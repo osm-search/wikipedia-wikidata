@@ -46,8 +46,7 @@ echo "DROP TABLE IF EXISTS linkcounts;" | psqlcmd
 echo "CREATE TABLE linkcounts (
         language text,
         title    text,
-        count    integer,
-        sumcount integer
+        count    integer
      );"  | psqlcmd
 
 echo "set counts"
@@ -59,7 +58,7 @@ do
     echo "CREATE TABLE ${LANG}pagelinkcount
           AS
           SELECT pl_title AS title,
-                 COUNT(*) AS count,
+                 COUNT(*) AS langcount,
                  0::bigint as othercount
           FROM ${LANG}pagelinks
           GROUP BY pl_title
@@ -74,6 +73,12 @@ do
           ;" | psqlcmd
 done
 
+echo "updates"
+for LANG in "${LANGUAGES_ARRAY[@]}"
+do
+    echo "UPDATE ${LANG}langlinks SET ll_title = REPLACE(ll_title, ' ', '_')
+         ;" | psqlcmd
+done
 
 echo "set othercounts"
 for LANG in "${LANGUAGES_ARRAY[@]}"
@@ -82,11 +87,13 @@ do
 
     for OTHERLANG in "${LANGUAGES_ARRAY[@]}"
     do
+        # langlinks table contain titles with spaces, e.g. 'one (two)' while pages and
+        # pagelinkcount table contain titles with underscore, e.g. 'one_(two)'
         echo "UPDATE ${LANG}pagelinkcount
-              SET othercount = ${LANG}pagelinkcount.othercount + x.count
+              SET othercount = othercount + x.count
               FROM (
-                SELECT page_title AS title,
-                       count
+                SELECT ${LANG}page.page_title AS title,
+                       ${OTHERLANG}pagelinkcount.langcount AS count
                 FROM ${LANG}langlinks
                 JOIN ${LANG}page ON (ll_from = page_id)
                 JOIN ${OTHERLANG}pagelinkcount ON (ll_lang = '${OTHERLANG}' AND ll_title = title)
@@ -103,7 +110,6 @@ echo "====================================================================="
 echo "Create and fill wikipedia_article_full"
 echo "====================================================================="
 
-# osm_type, osm_id will never be filled and Nominatim doesn't use them
 echo "DROP TABLE IF EXISTS wikipedia_article_full;" | psqlcmd
 echo "CREATE TABLE wikipedia_article_full (
         language       text NOT NULL,
@@ -115,8 +121,6 @@ echo "CREATE TABLE wikipedia_article_full (
         lon            double  precision,
         importance     double precision,
         title_en       text,
-        osm_type       character(1),
-        osm_id         bigint,
         wd_page_title  text,
         instance_of    text
       );" | psqlcmd
@@ -126,9 +130,9 @@ do
     echo "INSERT INTO wikipedia_article_full
           SELECT '${LANG}',
                  title,
-                 count,
+                 langcount,
                  othercount,
-                 count + othercount
+                 langcount + othercount
           FROM ${LANG}pagelinkcount
           ;" | psqlcmd
 done
