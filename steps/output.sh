@@ -6,10 +6,6 @@
 
 OUTPUT_PATH="$BUILDID/output"
 mkdir -p "$OUTPUT_PATH"
-# Postgresql server needs to have write access
-chmod 777 "$OUTPUT_PATH"
-# postgresql's COPY requires full path
-OUTPUT_PATH_ABS=$(realpath "$OUTPUT_PATH")
 
 psqlcmd() {
      psql --quiet $DATABASE_NAME |& \
@@ -74,13 +70,13 @@ echo "CREATE TABLE wikimedia_importance AS
          )
       );" | psqlcmd
 
-# ?? rows
+# 17m rows
 
 
 
 
 # "====================================================================="
-echo "Create table indexes"
+echo "Create indexes"
 # "====================================================================="
 
 echo "CREATE INDEX wikipedia_article_title_language_idx
@@ -94,14 +90,6 @@ echo "CREATE INDEX wikipedia_article_wd_page_title_idx
 echo "CREATE INDEX wikipedia_redirect_language_from_title_idx
       ON wikipedia_redirect
       (language, from_title)
-      ;" | psqlcmd
-echo "CREATE INDEX wikimedia_importance_title_language_idx
-      ON wikimedia_importance
-      (title, language)
-      ;" | psqlcmd
-echo "CREATE INDEX wikimedia_importance_wd_page_title_idx
-      ON wikimedia_importance
-      (wd_page_title)
       ;" | psqlcmd
 
 
@@ -118,40 +106,18 @@ pg_dump -d $DATABASE_NAME --no-owner -t wikipedia_article -t wikipedia_redirect 
         grep -v 'SELECT ' | \
         grep -v '\-\- ' | \
         sed 's/public\.//' | \
-        pigz -f -9 > "$OUTPUT_PATH/wikipedia_importance.sql.gz"
+        pigz -9 > "$OUTPUT_PATH/wikipedia_importance.sql.gz"
 
 
+for TABLE in wikipedia_article wikipedia_redirect wikimedia_importance
+do
+      echo "* $TABLE.csv.gz"
 
-echo "* wikipedia_article.csv.gz"
+      echo "COPY $TABLE TO STDOUT CSV HEADER;" | \
+            psqlcmd | \
+            pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"
+done
 
-rm -f "$OUTPUT_PATH_ABS/wikipedia_article.csv.gz"
-echo "COPY wikipedia_article
-      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikipedia_article.csv.gz'
-      CSV
-      HEADER;" | psqlcmd
-
-
-
-echo "* wikipedia_redirect.csv.gz"
-
-rm -f "$OUTPUT_PATH_ABS/wikipedia_redirect.csv.gz"
-echo "COPY wikipedia_redirect
-      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikipedia_redirect.csv.gz'
-      CSV
-      HEADER;" | psqlcmd
-
-
-
-echo "* wikimedia_importance.csv.gz"
-
-rm -f "$OUTPUT_PATH_ABS/wikimedia_importance.csv.gz"
-echo "COPY wikimedia_importance
-      TO PROGRAM 'pigz -9 > $OUTPUT_PATH_ABS/wikimedia_importance.csv.gz'
-      CSV
-      HEADER;" | psqlcmd
-
-# postgresql owns the files it dumps via COPY
-sudo chown "$USER" $OUTPUT_PATH/*.gz
 
 du -h $OUTPUT_PATH/*
 # 220M  wikipedia_article.csv.gz
