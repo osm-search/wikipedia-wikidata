@@ -12,7 +12,7 @@ LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 # List of mirrors https://dumps.wikimedia.org/mirrors.html
 # Download using main dumps.wikimedia.org: 150 minutes, mirror: 40 minutes
 : ${WIKIMEDIA_HOST:=wikimedia.bringyour.com}
-# See list on https://wikimedia.bringyour.com/wikidatawiki/
+# See list on https://wikimedia.bringyour.com/enwiki/
 : ${WIKIPEDIA_DATE:=20220620}
 
 
