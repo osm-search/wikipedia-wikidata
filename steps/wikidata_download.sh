@@ -10,7 +10,7 @@ echo "====================================================================="
 # Download using main dumps.wikimedia.org: 60 minutes, mirror: 20 minutes
 : ${WIKIMEDIA_HOST:=wikimedia.bringyour.com}
 # See list on https://wikimedia.bringyour.com/wikidatawiki/
-: ${WIKIDATA_DATE:=20220620}
+: ${WIKIDATA_DATE:=20220701}
 
 
 DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"

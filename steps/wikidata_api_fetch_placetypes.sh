@@ -6,6 +6,11 @@
 DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
 TEMP_PATH=$DOWNLOADED_PATH/tmp
 
+if [[ -e $DOWNLOADED_PATH/wikidata_place_dump.csv.gz ]]; then
+    echo "Output file $DOWNLOADED_PATH/wikidata_place_dump.csv.gz already exists. Won't fetch again."
+    exit 0
+fi
+
 echo "====================================================================="
 echo "Get wikidata places from wikidata query API"
 echo "====================================================================="

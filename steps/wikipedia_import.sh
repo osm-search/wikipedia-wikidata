@@ -21,10 +21,10 @@ echo "====================================================================="
 
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
-    echo "Language: $LANG"
+    echo "$LANG"
 
     # -----------------------------------------------------------
-    echo "Importing ${LANG}page from $CONVERTED_PATH_ABS/$LANG/pages.csv.gz";
+    echo "* ${LANG}page from $CONVERTED_PATH_ABS/$LANG/pages.csv.gz";
 
     echo "DROP TABLE IF EXISTS ${LANG}page;" | psqlcmd
     echo "CREATE TABLE ${LANG}page (
@@ -41,7 +41,7 @@ do
 
 
     # -----------------------------------------------------------
-    echo "Importing ${LANG}pagelinks from $CONVERTED_PATH_ABS/$LANG/pagelinks.csv.gz";
+    echo "* ${LANG}pagelinks from $CONVERTED_PATH_ABS/$LANG/pagelinks.csv.gz";
 
     echo "DROP TABLE IF EXISTS ${LANG}pagelinks;" | psqlcmd
     echo "CREATE TABLE ${LANG}pagelinks (
@@ -55,7 +55,7 @@ do
 
 
     # -----------------------------------------------------------
-    echo "Importing ${LANG}langlinks from $CONVERTED_PATH_ABS/$LANG/langlinks.csv.gz";
+    echo "* ${LANG}langlinks from $CONVERTED_PATH_ABS/$LANG/langlinks.csv.gz";
 
     echo "DROP TABLE IF EXISTS ${LANG}langlinks;" | psqlcmd
     echo "CREATE TABLE ${LANG}langlinks (
@@ -71,7 +71,7 @@ do
 
 
     # -----------------------------------------------------------
-    echo "Importing ${LANG}redirect from $CONVERTED_PATH_ABS/$LANG/redirects.csv.gz";
+    echo "* ${LANG}redirect from $CONVERTED_PATH_ABS/$LANG/redirects.csv.gz";
 
     echo "DROP TABLE IF EXISTS ${LANG}redirect;" | psqlcmd
     echo "CREATE TABLE ${LANG}redirect (
