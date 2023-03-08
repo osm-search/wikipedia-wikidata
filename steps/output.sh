@@ -116,6 +116,9 @@ do
       echo "COPY $TABLE TO STDOUT CSV HEADER;" | \
             psqlcmd | \
             pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"
+
+      # default is 600
+      chmod 644 "$OUTPUT_PATH/$TABLE.csv.gz"
 done
 
 
