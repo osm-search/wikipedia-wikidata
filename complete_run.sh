@@ -10,9 +10,13 @@
 
 ./install_dependencies.sh
 
-export BUILDID=wiki_build_20230201c
-export WIKIPEDIA_DATE=20230201 # check https://wikimedia.bringyour.com/enwiki/
-export WIKIDATA_DATE=20230201 # check https://wikimedia.bringyour.com/wikidatawiki/
+# checks https://wikimedia.bringyour.com/enwiki/
+#    and https://wikimedia.bringyour.com/wikidatawiki/
+LATEST_DATE=$(./steps/latest_available_date.sh) # yyyymmdd
+
+export WIKIPEDIA_DATE=$LATEST_DATE
+export WIKIDATA_DATE=$LATEST_DATE
+export BUILDID=wikimedia_build_$(date +"%Y%m%d")
 export LANGUAGES=$(grep -v '^#' config/languages.txt | tr "\n" ",")
 # export LANGUAGES=de,nl
 export DATABASE_NAME=$BUILDID
@@ -26,12 +30,13 @@ export DATABASE_TABLESPACE=extraspace # default is pg_default
 ./steps/wikidata_sql2csv.sh
 
 # dropdb --if-exists $DATABASE_NAME
-createdb --tablespace=extraspace $DATABASE_NAME
+createdb --tablespace=$DATABASE_TABLESPACE $DATABASE_NAME
 ./steps/wikipedia_import.sh
 ./steps/wikidata_import.sh
 
 ./steps/wikipedia_process.sh
 ./steps/wikidata_process.sh
 
+./steps/report_database_size.sh
 ./steps/output.sh
 # ./steps/cleanup.sh
