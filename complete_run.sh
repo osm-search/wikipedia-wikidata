@@ -12,7 +12,7 @@
 
 # checks https://wikimedia.bringyour.com/enwiki/
 #    and https://wikimedia.bringyour.com/wikidatawiki/
-LATEST_DATE=$(./steps/latest_available_date.sh) # yyyymmdd
+LATEST_DATE=$(./steps/latest_available_data.sh) # yyyymmdd
 
 export WIKIPEDIA_DATE=$LATEST_DATE
 export WIKIDATA_DATE=$LATEST_DATE
@@ -40,3 +40,5 @@ createdb --tablespace=$DATABASE_TABLESPACE $DATABASE_NAME
 ./steps/report_database_size.sh
 ./steps/output.sh
 # ./steps/cleanup.sh
+
+echo "Finished."
