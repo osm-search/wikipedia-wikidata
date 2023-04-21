@@ -10,8 +10,8 @@
 
 ./install_dependencies.sh
 
-# checks https://wikimedia.bringyour.com/enwiki/
-#    and https://wikimedia.bringyour.com/wikidatawiki/
+# checks https://mirror.clarkson.edu/wikimedia/enwiki/
+#    and https://mirror.clarkson.edu/wikimedia/wikidatawiki/
 LATEST_DATE=$(./steps/latest_available_data.sh) # yyyymmdd
 
 export WIKIPEDIA_DATE=$LATEST_DATE
