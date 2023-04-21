@@ -2,7 +2,7 @@
 
 #
 # Prints a YYYYMMDD date of the latest available date on 
-# https://wikimedia.bringyour.com/enwiki/
+# https://mirror.clarkson.edu/wikimedia/enwiki/
 # We do some additional checks if the dumps are complete, too
 #
 
@@ -14,7 +14,7 @@ debug() {
 
 #
 # Usually you might try to get a list of dates from
-# https://wikimedia.bringyour.com/enwiki/ and then sort them, then look at status.html
+# https://mirror.clarkson.edu/wikimedia/enwiki/ and then sort them, then look at status.html
 # inside the directories.
 #
 # We want to avoid parsing HTML.
@@ -39,7 +39,7 @@ debug() {
 # to dump. We then assume all other languages are also ready.
 #
 #
-INDEX_JSON_URL="https://wikimedia.bringyour.com/index.json"
+INDEX_JSON_URL="https://mirror.clarkson.edu/wikimedia/index.json"
 debug "$INDEX_JSON_URL"
 INDEX_JSON=$(curl -s "$INDEX_JSON_URL" | jq '.wikis.enwiki.jobs.pagetable')
 if [[ "$INDEX_JSON" = "" ]]; then
@@ -93,7 +93,7 @@ ANY_FILE_MISSING=0
 ##
 # from wikipedia_download.sh
 WIKIPEDIA_REQUIRED_FILES="page pagelinks langlinks redirect"
-DUMP_RUN_INFO_URL="https://wikimedia.bringyour.com/enwiki/$LATEST_DATE/dumpruninfo.json"
+DUMP_RUN_INFO_URL="https://mirror.clarkson.edu/wikimedia/enwiki/$LATEST_DATE/dumpruninfo.json"
 debug $DUMP_RUN_INFO_URL
 DUMP_RUN_INFO=$(curl -s "$DUMP_RUN_INFO_URL")
 
@@ -124,7 +124,7 @@ done
 # from wikidata_download.sh
 WIKIDATA_REQUIRED_FILES="geo_tags page wb_items_per_site"
 
-DUMP_RUN_INFO_URL="https://wikimedia.bringyour.com/enwiki/$LATEST_DATE/dumpruninfo.json"
+DUMP_RUN_INFO_URL="https://mirror.clarkson.edu/wikimedia/enwiki/$LATEST_DATE/dumpruninfo.json"
 debug $DUMP_RUN_INFO_URL
 DUMP_RUN_INFO=$(curl -s "$DUMP_RUN_INFO_URL")
 
