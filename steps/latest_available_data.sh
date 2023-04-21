@@ -61,7 +61,7 @@ check_all_files_ready() {
     ## usually the last to be dumped
     ##
     # from wikipedia_download.sh
-    WIKIPEDIA_REQUIRED_FILES="page pagelinks langlinks redirect"
+    WIKIPEDIA_REQUIRED_FILES="page pagelinks langlinks linktarget redirect"
     DUMP_RUN_INFO_URL="https://mirror.clarkson.edu/wikimedia/zhwiki/$CHECK_DATE/dumpruninfo.json"
     debug $DUMP_RUN_INFO_URL
     DUMP_RUN_INFO=$(curl -s --fail "$DUMP_RUN_INFO_URL")

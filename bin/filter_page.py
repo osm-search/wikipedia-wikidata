@@ -6,7 +6,6 @@ Input from STDIN
     #   `page_id`            int(8) unsigned     NOT NULL AUTO_INCREMENT,
     #   `page_namespace`     int(11)             NOT NULL DEFAULT 0,
     #   `page_title`         varbinary(255)      NOT NULL DEFAULT '',
-    #   `page_restrictions`  tinyblob                     DEFAULT NULL,
     #   `page_is_redirect`   tinyint(1) unsigned NOT NULL DEFAULT 0,
     #   `page_is_new`        tinyint(1) unsigned NOT NULL DEFAULT 0,
     #   `page_random`        double unsigned     NOT NULL DEFAULT 0,

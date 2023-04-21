@@ -42,19 +42,21 @@ do
     mkdir -p "$DOWNLOADED_PATH/$LANG"
 
     # English is the largest
-    # 1.7G  downloaded/en/page.sql.gz
-    # 6.2G  downloaded/en/pagelinks.sql.gz
-    # 355M  downloaded/en/langlinks.sql.gz
-    # 128M  downloaded/en/redirect.sql.gz
+    # 2.1G  downloaded/en/page.sql.gz
+    # 6.4G  downloaded/en/pagelinks.sql.gz
+    # 492M  downloaded/en/langlinks.sql.gz
+    # 992M  downloaded/en/linktarget.sql.gz
+    # 160M  downloaded/en/redirect.sql.gz
 
     # Smaller language Turkish
-    #  53M  downloaded/tr/page.sql.gz
-    # 176M  downloaded/tr/pagelinks.sql.gz
-    # 106M  downloaded/tr/langlinks.sql.gz
-    # 3.2M  downloaded/tr/redirect.sql.gz
+    #  90M  downloaded/tr/page.sql.gz
+    # 255M  downloaded/tr/pagelinks.sql.gz
+    # 166M  downloaded/tr/langlinks.sql.gz
+    #  62M  downloaded/tr/linktarget.sql.gz
+    # 4.2M  downloaded/tr/redirect.sql.gz
 
   
-    for FN in page.sql.gz pagelinks.sql.gz langlinks.sql.gz redirect.sql.gz; do
+    for FN in page.sql.gz pagelinks.sql.gz langlinks.sql.gz linktarget.sql.gz redirect.sql.gz; do
 
         download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-$FN             "$DOWNLOADED_PATH/$LANG/$FN"
         download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/md5sums-${LANG}wiki-$WIKIPEDIA_DATE-$FN.txt "$DOWNLOADED_PATH/$LANG/$FN.md5"
