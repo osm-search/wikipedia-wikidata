@@ -32,7 +32,10 @@ sudo apt-get install -y wget coreutils nodejs jq moreutils pigz
 # https://csvkit.readthedocs.io
 sudo apt-get install -y python3-dev python3-pip python3-setuptools build-essential
 pip install csvkit
+sudo ln -s ~/.local/bin/csvcut /usr/local/bin/csvcut
 
 # https://wdtaxonomy.readthedocs.io/
+sudo apt-get install -y nodejs
 node --version
 sudo npm install -g wikidata-taxonomy
+wdtaxonomy --version
