@@ -57,18 +57,31 @@ echo "* wikimedia_importance"
 
 echo "DROP TABLE IF EXISTS wikimedia_importance;" | psqlcmd
 echo "CREATE TABLE wikimedia_importance AS
-      (
-         (
-            SELECT language, title, importance, wd_page_title
-            FROM wikipedia_article
-         )
-         UNION
-         (
-            SELECT r.language, r.from_title, a.importance, a.wd_page_title
-            FROM wikipedia_article a, wikipedia_redirect r
-            WHERE a.language = r.language and a.title = r.to_title
-         )
-      );" | psqlcmd
+      SELECT language, title, importance, wd_page_title as wikidata_id
+      FROM wikipedia_article
+      ;" | psqlcmd
+
+# Now add the same from redirects, unless (language + title) already exists in wikimedia_importance
+echo "WITH from_redirects AS (
+          SELECT r.language, r.from_title as title, a.importance, a.wd_page_title AS wikidata_id
+          FROM wikipedia_article a, wikipedia_redirect r
+          WHERE a.language = r.language AND a.title = r.to_title
+      )
+      INSERT INTO wikimedia_importance
+      SELECT from_redirects.* FROM from_redirects
+      LEFT JOIN wikimedia_importance USING (language, title)
+      WHERE wikimedia_importance IS NULL
+      ;" | psqlcmd
+
+# Are all language+title unique?
+# WITH duplicates AS (
+#   SELECT language, title, count(*)
+#   FROM wikimedia_importance
+#   GROUP BY language, title
+#   HAVING count(*) > 1
+# )
+# SELECT count(*) FROM duplicates;
+#  0
 
 # 17m rows
 
