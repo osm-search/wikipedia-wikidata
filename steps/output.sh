@@ -128,6 +128,7 @@ do
 
       echo "COPY $TABLE TO STDOUT CSV HEADER;" | \
             psqlcmd | \
+            sort | \
             pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"
 
       # default is 600
