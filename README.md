@@ -54,12 +54,12 @@ retries (wikidata API being unreliable) was added.
 `wikimedia_importance.csv.gz` contains about 17 million rows. Number of lines grew 2% between 2022 and 2023. The file
 is sorted.
 
-   Column    |       Type       |
--------------+------------------+
- language    | text             |
- title       | text             |
- importance  | double precision |
- wikidata_id | text             |
+|   Column    |       Type       |
+| ----------- | ---------------- |
+| language    | text             |
+| title       | text             |
+| importance  | double precision |
+| wikidata_id | text             |
 
 All columns are filled with values.
 
@@ -69,15 +69,15 @@ Importance is between 0.0000000001 (never 0) and 1.
 
 Currently 39 languages, English has by far the largest share.
 
-  language      |  count
-----------------+----------------------
- en (English)   | 3,337,994 (19%)
- de (German)    |   966,820 (6%)
- fr (French)    |   935,817 (5%)
- sv (Swdish)    |   906,813
- uk (Ukranian)  |   900,548
- ...            |
- bg (Bulgarian) |    88,993
+|  language      |  count           |
+| -------------- | ---------------- |
+| en (English)   | 3,337,994 (19%)  |
+| de (German)    |   966,820 (6%)   |
+| fr (French)    |   935,817 (5%)   |
+| sv (Swdish)    |   906,813        |
+| uk (Ukranian)  |   900,548        |
+| ...            |                  |
+| bg (Bulgarian) |    88,993        |
  
 Examples of `wikimedia_importance.csv.gz` rows:
 
@@ -206,16 +206,15 @@ OpenStreetMap contributors frequently tag items with links to Wikipedia
 and Wikidata ([documentation](https://wiki.openstreetmap.org/wiki/Key:wikidata)). For example
 [Newcastle upon Tyne](https://www.openstreetmap.org/relation/142282) has the tags
 
- tag           | value
----------------+---------------------------------
- admin_level   | 8
- boundary      | administrative
- name          | Newcastle upon Tyne
- name:ur       | نیوکاسل
- type          | boundary
- website       | https://www.newcastle.gov.uk/
- wikidata      | Q1425428
- wikipedia     | en:Newcastle upon Tyne
+| tag           | value                           |
+| ------------- | ------------------------------- |
+| admin_level   | 8                               |
+| boundary      | administrative                  |
+| name          | Newcastle upon Tyne             |
+| type          | boundary                        |
+| website       | https://www.newcastle.gov.uk/   |
+| wikidata      | Q1425428                        |
+| wikipedia     | en:Newcastle upon Tyne          |
 
 When Nominatim indexes places it checks if they have an wikipedia or wikidata tag. If they do
 they set the `importance` value in the `placex` table for that place. This happens in
@@ -236,41 +235,41 @@ the `languages.txt` file to only run a small language (e.g. Bulgarian) first.
 
 1. latest\_available\_data
 
-  Prints a date. Wikipedia exports take many days, then mirrors are sometimes slow copying them. It's not
+   Prints a date. Wikipedia exports take many days, then mirrors are sometimes slow copying them. It's not
 uncommon for an export starting Jan/1st to only be full ready Jan/20th.
 
 2. wikipedia_download (1h)
 
-  Downloads 40GB compressed files. 4 files per language. English is 10GB.
+   Downloads 40GB compressed files. 4 files per language. English is 10GB.
 
 3. wikidata\_download (0:15h)
 
-  Another 4 files, 5GB.
+   Another 4 files, 5GB.
 
 4. wikidata_api\_fetch\_placetypes (0:15h)
 
-  Runs 300 SPARQL queries against wikidata servers. Output is 5GB.
+   Runs 300 SPARQL queries against wikidata servers. Output is 5GB.
 
 5. wikipedia_sql2csv (15h)
    
-  By far the longest step, 70% of the build is spend here.
+   By far the longest step, 70% of the build is spend here.
   
-  The MySQL SQL files get parsed sequentially and we try to exclude as much data (rows,
-  columns) as possible. Output is 75% smaller than input. Any work done here cuts
-  down the time (and space) needed in the database (database used to be 1TB before
-  this step).
+   The MySQL SQL files get parsed sequentially and we try to exclude as much data (rows,
+   columns) as possible. Output is 75% smaller than input. Any work done here cuts
+   down the time (and space) needed in the database (database used to be 1TB before
+   this step).
   
-  Command-line tools are great for processing sequential data but piping data through 4
-  tools could be replaced by a single custom script later.
+   Command-line tools are great for processing sequential data but piping data through 4
+   tools could be replaced by a single custom script later.
    
-  Most time is spend on the Pagelinks table
+   Most time is spend on the Pagelinks table
   
-  ```
-  [language en] Page table      (0:22h)
-  [language en] Pagelinks table (3:00h)
-  [language en] langlinks table (0:05h)
-  [language en] redirect table  (0:02h)
-  ```
+   ```
+   [language en] Page table      (0:22h)
+   [language en] Pagelinks table (3:00h)
+   [language en] langlinks table (0:05h)
+   [language en] redirect table  (0:02h)
+   ```
 
 6. wikidata_sql2csv (1h)
 
@@ -282,9 +281,9 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
 
 7. wikipedia\_import, wikidata\_import (0:40h)
 
-  Given the number of rows a pretty efficient loading of data into Postgresql.
+   Given the number of rows a pretty efficient loading of data into Postgresql.
 
-  English database tables
+   English database tables
 
    ```
    enpage             |  17,211,555 rows | 946 MB
