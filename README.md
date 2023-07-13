@@ -57,13 +57,18 @@ is sorted.
 |   Column    |       Type       |
 | ----------- | ---------------- |
 | language    | text             |
+| type        | char             |
 | title       | text             |
 | importance  | double precision |
 | wikidata_id | text             |
 
 All columns are filled with values.
 
-Combination of language+title are unique.
+Combination of language+title (and language+type+title) are unique.
+
+Type is either 'a' (article) or 'r' (redirect).
+
+Maximum title length is 247.
 
 Importance is between 0.0000000001 (never 0) and 1.
 
@@ -84,34 +89,36 @@ Examples of `wikimedia_importance.csv.gz` rows:
 * Wikipedia contains redirects, so a single wikidata object can have multiple titles even though. Each title has the same importance score. Redirects to non-existing articles are removed.
 
     ```
-    en,Brandenburger_gate,0.5521887760090184,Q82425
-    en,Brandenburger_Gate,0.5521887760090184,Q82425
-    en,Brandenburger_Tor,0.5521887760090184,Q82425
-    en,Brandenburg_gate,0.5521887760090184,Q82425
-    en,Brandenburg_Gate,0.5521887760090184,Q82425
-    en,BRANDENBURG_GATE,0.5521887760090184,Q82425
-    en,Brandenburg_Gates,0.5521887760090184,Q82425
-    en,Brandenburg_Tor,0.5521887760090184,Q82425
+    en,a,Brandenburg_Gate,0.5531125195487524,Q82425
+    en,r,Berlin's_Gate,0.5531125195487524,Q82425
+    en,r,Brandenberg_Gate,0.5531125195487524,Q82425
+    en,r,Brandenburger_gate,0.5531125195487524,Q82425
+    en,r,Brandenburger_Gate,0.5531125195487524,Q82425
+    en,r,Brandenburger_Tor,0.5531125195487524,Q82425
+    en,r,Brandenburg_gate,0.5531125195487524,Q82425
+    en,r,BRANDENBURG_GATE,0.5531125195487524,Q82425
+    en,r,Brandenburg_Gates,0.5531125195487524,Q82425
+    en,r,Brandenburg_Tor,0.5531125195487524,Q82425
     ```
 
 * Wikipedia titles contain underscores instead of space, e.g. [Alford,_Massachusetts](https://en.wikipedia.org/wiki/Alford,_Massachusetts)
 
     ```
-    en,"Alford,_ma",0.3659818647022956,Q2431901
-    en,"Alford,_MA",0.3659818647022956,Q2431901
-    en,"Alford,_Mass",0.3659818647022956,Q2431901
-    en,"Alford,_Massachusetts",0.3659818647022956,Q2431901
+    en,a,"Alford,_Massachusetts",0.36590368314334637,Q2431901
+    en,r,"Alford,_ma",0.36590368314334637,Q2431901
+    en,r,"Alford,_MA",0.36590368314334637,Q2431901
+    en,r,"Alford,_Mass",0.36590368314334637,Q2431901
     ```
 
 * The highest score article is the [United States](https://en.wikipedia.org/wiki/United_States) 
 
     ```
-    pl,Stany_Zjednoczone,1,Q30
-    en,United_States,1,Q30
-    ru,Соединённые_Штаты_Америки,1,Q30
-    hu,Amerikai_Egyesült_Államok,1,Q30
-    it,Stati_Uniti_d'America,1,Q30
-    de,Vereinigte_Staaten,1,Q30
+    pl,a,Stany_Zjednoczone,1,Q30
+    en,a,United_States,1,Q30
+    ru,a,Соединённые_Штаты_Америки,1,Q30
+    hu,a,Amerikai_Egyesült_Államok,1,Q30
+    it,a,Stati_Uniti_d'America,1,Q30
+    de,a,Vereinigte_Staaten,1,Q30
     ...
     ```
 
