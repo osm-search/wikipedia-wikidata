@@ -22,7 +22,7 @@ in the results match the search terms).
 Wikipedia publishes [dumps](https://meta.wikimedia.org/wiki/Data_dumps) of their databases once per month.
 
 To run one build you need 420GB of disc space (of which 360GB Postgresql database). The scripts process
-39 languages and output 4 files. Runtime is approximately 24 hours on a 4 core, 4GB RAM machine with SSD
+39 languages and output 4 files. Runtime is approximately 14 hours on a 4 core, 4GB RAM machine with SSD
 discs.
 
 ```
@@ -250,10 +250,8 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
 
    Runs 300 SPARQL queries against wikidata servers. Output is 5GB.
 
-5. wikipedia_sql2csv (15h)
+5. wikipedia_sql2csv (5h)
    
-   By far the longest step, 70% of the build is spend here.
-  
    The MySQL SQL files get parsed sequentially and we try to exclude as much data (rows,
    columns) as possible. Output is 75% smaller than input. Any work done here cuts
    down the time (and space) needed in the database (database used to be 1TB before
