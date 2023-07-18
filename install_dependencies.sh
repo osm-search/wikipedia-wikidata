@@ -27,12 +27,7 @@ sudo -u postgres createuser -s $USER
 
 
 sudo apt-get install -y wget coreutils nodejs jq moreutils pigz
-
-# https://github.com/wireservice/csvkit
-# https://csvkit.readthedocs.io
 sudo apt-get install -y python3-dev python3-pip python3-setuptools build-essential
-pip install csvkit
-sudo ln -s ~/.local/bin/csvcut /usr/local/bin/csvcut
 
 # https://wdtaxonomy.readthedocs.io/
 sudo apt-get install -y nodejs

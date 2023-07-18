@@ -22,7 +22,7 @@ in the results match the search terms).
 Wikipedia publishes [dumps](https://meta.wikimedia.org/wiki/Data_dumps) of their databases once per month.
 
 To run one build you need 420GB of disc space (of which 360GB Postgresql database). The scripts process
-39 languages and output 4 files. Runtime is approximately 14 hours on a 4 core, 4GB RAM machine with SSD
+39 languages and output 4 files. Runtime is approximately 13 hours on a 4 core, 4GB RAM machine with SSD
 discs.
 
 ```
@@ -264,24 +264,21 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
    down the time (and space) needed in the database (database used to be 1TB before
    this step).
   
-   Command-line tools are great for processing sequential data but piping data through 4
-   tools could be replaced by a single custom script later.
-   
    Most time is spend on the Pagelinks table
   
    ```
-   [language en] Page table      (0:22h)
-   [language en] Pagelinks table (3:00h)
-   [language en] langlinks table (0:05h)
-   [language en] redirect table  (0:02h)
+   [language en] Page table      (0:06h)
+   [language en] Pagelinks table (1:10h)
+   [language en] langlinks table (0:01h)
+   [language en] redirect table  (0:01h)
    ```
 
-6. wikidata_sql2csv (1h)
+6. wikidata_sql2csv (0:15h)
 
    ```
-	geo_tags          (0:02h)
-	page              (0:40h)
-	wb_items_per_site (0:20h)
+	geo_tags          (0:01h)
+	page              (0:09h)
+	wb_items_per_site (0:07h)
    ```
 
 7. wikipedia\_import, wikidata\_import (0:40h)
