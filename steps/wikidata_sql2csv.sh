@@ -37,10 +37,7 @@ echo "wikidata_sql2csv geo_tags"
 unpigz -c $DOWNLOADED_PATH/geo_tags.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
 sed 's/\x0//g' | \
-sed 's/\r\?//g' | \
-grep ',earth,1,' | \
-csvcut -c 2,5,6 | \
-bin/round_coordinates.py | \
+bin/filter_wikidata_geo_tags.py | \
 pigz -9 \
 > $CONVERTED_PATH/geo_tags.csv.gz
 
@@ -87,11 +84,7 @@ echo "wikidata_sql2csv page"
 unpigz -c $DOWNLOADED_PATH/page.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
 sed 's/\x0//g' | \
-sed 's/\r\?//g' | \
-csvcut -c 1,3,2 | \
-grep -e ',0$' | \
-sed 's/,0$//' | \
-grep ',Q' | \
+bin/filter_wikidata_page.py | \
 pigz -9 \
 > $CONVERTED_PATH/page.csv.gz
 
@@ -129,17 +122,15 @@ echo "wikidata_sql2csv wb_items_per_site"
 #   `ips_site_page` varbinary(310)      NOT NULL,
 
 # Only considering languages we need, cuts down 80m lines to 52m
-LISTLANG=${LANGUAGES_ARRAY[@]}
+# LISTLANG=${LANGUAGES_ARRAY[@]}
 # ar bg ca cs da de en es
-LANG_E_REGEX=",\(${LISTLANG// /\\|}\)wiki,"
+# LANG_E_REGEX=",\(${LISTLANG// /\\|}\)wiki,"
 # ,\(ar\|bg\|ca\|cs\|da\|de\|en...\)wiki,
 
 unpigz -c $DOWNLOADED_PATH/wb_items_per_site.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
 sed 's/\x0//g' | \
-sed 's/\r\?//g' | \
-grep -e "$LANG_E_REGEX" | \
-csvcut -c 2,3,4 | \
+bin/filter_wikidata_wb_items_per_site.py | \
 pigz -9 \
 > $CONVERTED_PATH/wb_items_per_site.csv.gz
 
