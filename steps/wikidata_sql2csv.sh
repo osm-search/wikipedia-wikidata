@@ -36,7 +36,6 @@ echo "wikidata_sql2csv geo_tags"
 # Round the coordinates
 unpigz -c $DOWNLOADED_PATH/geo_tags.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
-sed 's/\x0//g' | \
 bin/filter_wikidata_geo_tags.py | \
 pigz -9 \
 > $CONVERTED_PATH/geo_tags.csv.gz
@@ -83,7 +82,6 @@ echo "wikidata_sql2csv page"
 
 unpigz -c $DOWNLOADED_PATH/page.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
-sed 's/\x0//g' | \
 bin/filter_wikidata_page.py | \
 pigz -9 \
 > $CONVERTED_PATH/page.csv.gz
@@ -129,7 +127,6 @@ echo "wikidata_sql2csv wb_items_per_site"
 
 unpigz -c $DOWNLOADED_PATH/wb_items_per_site.sql.gz | \
 python3 bin/mysqldump_to_csv.py | \
-sed 's/\x0//g' | \
 bin/filter_wikidata_wb_items_per_site.py | \
 pigz -9 \
 > $CONVERTED_PATH/wb_items_per_site.csv.gz
