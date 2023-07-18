@@ -3,3 +3,4 @@ https://github.com/jamesmishra/mysqldump-to-csv
 * Added errors=surrogateescape to open(), otherwise the script threw UnicodeDecodeError for langlinks files
 * Use python3 in first line
 * Explicitly set escapechar for csv.writer
+* Don't print \x0 for NULL values, print '' instead.
