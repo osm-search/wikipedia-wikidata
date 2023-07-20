@@ -42,13 +42,6 @@ echo "====================================================================="
 echo "Process language tables and associated pagelink counts"
 echo "====================================================================="
 
-echo "DROP TABLE IF EXISTS linkcounts;" | psqlcmd
-echo "CREATE TABLE linkcounts (
-        language text,
-        title    text,
-        count    integer
-     );"  | psqlcmd
-
 echo "set counts"
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
@@ -60,14 +53,6 @@ do
           SELECT pl_title AS title,
                  COUNT(*) AS langcount,
                  0::bigint as othercount
-          FROM ${LANG}pagelinks
-          GROUP BY pl_title
-          ;" | psqlcmd
-
-    echo "INSERT INTO linkcounts
-          SELECT '${LANG}',
-                 pl_title,
-                 COUNT(*)
           FROM ${LANG}pagelinks
           GROUP BY pl_title
           ;" | psqlcmd
