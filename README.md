@@ -301,7 +301,6 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
 
    ```
    set counts                                             (0:15h)
-   add underscores to langlinks.ll_title                  (0:20h)
    set othercounts                                        (2:30h)
    Create and fill wikipedia_article_full                 (0.03h)
    Create derived tables                                  (0.03h)
