@@ -55,7 +55,7 @@ do
     # English wikipedia:
     #   input 6.8GB compressed (54GB uncompressed)
     #   output 450MB compressed (3.1GB uncompressed)
-    # Output columns: pl_title
+    # Output columns: pl_title, count
 
     unpigz -c $DOWNLOADED_PATH/${LANG}/pagelinks.sql.gz | \
     python3 bin/mysqldump_to_csv.py | \
