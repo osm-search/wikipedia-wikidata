@@ -1,6 +1,6 @@
-Berlin_dövlət_kitabxanası,2074847,az
-Berlin_döyüşü_(1945),291145,az
-Berlin_hücumu_(2016),52637892,az
-Berlin_kafedralı,494808,az
-Berlin_konqresi,438617,az
+Berlin_dövlət_kitabxanası,2074847,tr
+Berlin_döyüşü_(1945),291145,tr
+Berlin_hücumu_(2016),52637892,tr
+Berlin_kafedralı,494808,tr
+Berlin_konqresi,438617,tr
 "Berlin,_Berlin",1234,de

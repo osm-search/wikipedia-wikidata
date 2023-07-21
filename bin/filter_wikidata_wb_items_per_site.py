@@ -17,18 +17,13 @@ import os
 import sys
 import csv
 
-def get_languages():
-    with open('config/languages.txt', 'r') as file:
-        languages = file.readlines()
-        languages = map(lambda line: line.strip('\n'), languages)
-        languages = filter(lambda line: not line.startswith('#'), languages )
-    return languages
+# Add the parent directory to sys.path
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parent_dir)
 
-# TODO: this ignores the environment variable that might be a subset
-languages_set = set(get_languages())
-if 'LANGUAGES' in os.environ:
-    languages_set = set(os.environ['LANGUAGES'].split(','))
+from lib.languages import Languages;
 
+languages_set = set(Languages.get_languages())
 # print(languages_set, file=sys.stderr)
 
 

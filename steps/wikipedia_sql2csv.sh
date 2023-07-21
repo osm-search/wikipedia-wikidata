@@ -39,7 +39,7 @@ do
     # Output columns: page_id, page_title
 
     unpigz -c $DOWNLOADED_PATH/${LANG}/page.sql.gz | \
-    python3 bin/mysqldump_to_csv.py | \
+    ./bin/mysqldump_to_csv.py | \
     bin/filter_page.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/pages.csv.gz
 
@@ -58,7 +58,7 @@ do
     # Output columns: pl_title, count
 
     unpigz -c $DOWNLOADED_PATH/${LANG}/pagelinks.sql.gz | \
-    python3 bin/mysqldump_to_csv.py | \
+    ./bin/mysqldump_to_csv.py | \
     bin/filter_pagelinks.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/pagelinks.csv.gz
 
@@ -76,7 +76,7 @@ do
     #   output 380MB compressed (1.3GB uncompressed)
 
     unpigz -c $DOWNLOADED_PATH/${LANG}/langlinks.sql.gz | \
-    python3 bin/mysqldump_to_csv.py | \
+    ./bin/mysqldump_to_csv.py | \
     bin/filter_langlinks.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/langlinks.csv.gz
 
@@ -96,7 +96,7 @@ do
     #   output 100MB compressed (300MB uncompressed)
 
     unpigz -c $DOWNLOADED_PATH/${LANG}/redirect.sql.gz | \
-    python3 bin/mysqldump_to_csv.py | \
+    ./bin/mysqldump_to_csv.py | \
     bin/filter_redirect.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/redirect.csv.gz
 
