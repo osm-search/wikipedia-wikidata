@@ -45,10 +45,11 @@ do
 
     echo "DROP TABLE IF EXISTS ${LANG}pagelinks;" | psqlcmd
     echo "CREATE TABLE ${LANG}pagelinks (
-            pl_title          text
+            pl_title          text,
+            count             integer
         );" | psqlcmd
 
-    echo "COPY ${LANG}pagelinks (pl_title)
+    echo "COPY ${LANG}pagelinks (pl_title, count)
         FROM PROGRAM 'unpigz -c $CONVERTED_PATH_ABS/$LANG/pagelinks.csv.gz'
         CSV
         ;" | psqlcmd

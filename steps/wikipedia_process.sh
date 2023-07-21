@@ -51,7 +51,7 @@ do
     echo "CREATE TABLE ${LANG}pagelinkcount
           AS
           SELECT pl_title AS title,
-                 COUNT(*) AS langcount,
+                 SUM(count) AS langcount,
                  0::bigint as othercount
           FROM ${LANG}pagelinks
           GROUP BY pl_title
