@@ -23,30 +23,19 @@ Output to STDOUT: gt_page_id, gt_lat, gt_lon
 import sys
 import csv
 
-reader = csv.DictReader(sys.stdin, fieldnames=[
-            'gt_id',
-            'gt_page_id',
-            'gt_globe',
-            'gt_primary',
-            'gt_lat',
-            'gt_lon',
-            'gt_dim',
-            'gt_type',
-            'gt_name',
-            'gt_country',
-            'gt_region'
-        ])
+reader = csv.reader(sys.stdin)
 
 for row in reader:
-    # There are places e.g. on the moon with coordinates
-    if (row['gt_globe'] != 'earth'):
+    # gt_globe: There are places e.g. on the moon with coordinates
+    if (row[2] != 'earth'):
         continue
 
-    if (row['gt_primary'] != '1'):
+    # gt_primary
+    if (row[3] != '1'):
         continue
 
-    lat = float(row['gt_lat'])
-    lon = float(row['gt_lon'])
+    lat = float(row[4])
+    lon = float(row[5])
 
     if (lat == 0 and lon == 0):
         # print('skipping 0,0', file=sys.stderr)
@@ -61,4 +50,4 @@ for row in reader:
     lat = round(lat, 5)
     lon = round(lon, 5)
 
-    print(row['gt_page_id'] + ',' + str(lat) + ',' + str(lon))
+    print(row[1] + ',' + str(lat) + ',' + str(lon))

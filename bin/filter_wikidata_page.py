@@ -27,29 +27,15 @@ Output to STDOUT: page_id, page_title
 import sys
 import csv
 
-reader = csv.DictReader(sys.stdin, fieldnames=[
-            'page_id',
-            'page_namespace',
-            'page_title',
-            'page_restrictions',
-            'page_is_redirect',
-            'page_is_new',
-            'page_random',
-            'page_touched',
-            'page_links_updated',
-            'page_latest',
-            'page_len',
-            'page_content_model',
-            'page_lang'
-        ])
+reader = csv.reader(sys.stdin)
 
 for row in reader:
-    # 0 are articles (99% of the input lines)
-    if (row['page_namespace'] != '0'):
+    # page_namespace: 0 are articles (99% of the input lines)
+    if (row[1] != '0'):
         continue
 
-    # Some are special pages, not articles
-    if (row['page_title'][0] != 'Q'):
+    # page_title are actually ids. Some are special pages, not articles
+    if (row[2][0] != 'Q'):
         continue
 
-    print(row['page_id'] + ',' + row['page_title'])
+    print(row[0] + ',' + row[2])

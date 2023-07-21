@@ -23,30 +23,16 @@ Output to STDOUT: page_id, page_title
 import sys
 import csv
 
-reader = csv.DictReader(sys.stdin, fieldnames=[
-        'page_id',
-        'page_namespace',
-        'page_title',
-        'page_restrictions',
-        'page_is_redirect',
-        'page_is_new',
-        'page_random',
-        'page_touched',
-        'page_links_updated',
-        'page_latest',
-        'page_len',
-        'page_content_model',
-        'page_lang'
-    ])
-writer = csv.DictWriter(sys.stdout, fieldnames=['id', 'title'], dialect='unix', quoting=csv.QUOTE_MINIMAL)
+reader = csv.reader(sys.stdin)
+writer = csv.writer(sys.stdout, dialect='unix', quoting=csv.QUOTE_MINIMAL)
 
 for row in reader:
     # 0 are articles
-    if (row['page_namespace'] != '0'):
+    if (row[1] != '0'):
         continue
 
-    title = row['page_title'].replace('\r', '')
+    title = row[2].replace('\r', '')
     if len(title) == 0:
         continue
 
-    writer.writerow({'id': row['page_id'], 'title': title})
+    writer.writerow([row[0], title])

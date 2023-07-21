@@ -32,21 +32,18 @@ if 'LANGUAGES' in os.environ:
 # print(languages_set, file=sys.stderr)
 
 
-reader = csv.DictReader(sys.stdin, fieldnames=[
-            'ips_row_id',
-            'ips_item_id',
-            'ips_site_id',
-            'ips_site_page'
-        ])
-writer = csv.DictWriter(sys.stdout, fieldnames=['item_id', 'site_id', 'title'], dialect='unix', quoting=csv.QUOTE_MINIMAL)
+reader = csv.reader(sys.stdin)
+writer = csv.writer(sys.stdout, dialect='unix', quoting=csv.QUOTE_MINIMAL)
 
 for row in reader:
-    title = row['ips_site_page'].replace('\r', '')
+    # ips_site_page is the title
+    title = row[3].replace('\r', '')
     if len(title) == 0:
         continue
 
-    language = row['ips_site_id'].replace('wiki', '')
+    # ips_site_id, e.g. 'enwiki'
+    language = row[2].replace('wiki', '')
     if language not in languages_set:
         continue
 
-    writer.writerow({'item_id': row['ips_item_id'], 'site_id': row['ips_site_id'], 'title': title})
+    writer.writerow([row[1], row[2], title])
