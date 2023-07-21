@@ -35,7 +35,7 @@ echo "wikidata_sql2csv geo_tags"
 # Remove anything globe!=earth, primary!=1
 # Round the coordinates
 unpigz -c $DOWNLOADED_PATH/geo_tags.sql.gz | \
-python3 bin/mysqldump_to_csv.py | \
+./bin/mysqldump_to_csv.py | \
 bin/filter_wikidata_geo_tags.py | \
 pigz -9 \
 > $CONVERTED_PATH/geo_tags.csv.gz
@@ -81,7 +81,7 @@ echo "wikidata_sql2csv page"
 # Remove all page_title that don't start with 'Q'
 
 unpigz -c $DOWNLOADED_PATH/page.sql.gz | \
-python3 bin/mysqldump_to_csv.py | \
+./bin/mysqldump_to_csv.py | \
 bin/filter_wikidata_page.py | \
 pigz -9 \
 > $CONVERTED_PATH/page.csv.gz
@@ -126,7 +126,7 @@ echo "wikidata_sql2csv wb_items_per_site"
 # ,\(ar\|bg\|ca\|cs\|da\|de\|en...\)wiki,
 
 unpigz -c $DOWNLOADED_PATH/wb_items_per_site.sql.gz | \
-python3 bin/mysqldump_to_csv.py | \
+./bin/mysqldump_to_csv.py | \
 bin/filter_wikidata_wb_items_per_site.py | \
 pigz -9 \
 > $CONVERTED_PATH/wb_items_per_site.csv.gz
