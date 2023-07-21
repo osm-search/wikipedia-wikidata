@@ -15,22 +15,16 @@ Output to STDOUT: rd_from_page_id, rd_title
 import sys
 import csv
 
-reader = csv.DictReader(sys.stdin, fieldnames=[
-        'rd_from',
-        'rd_namespace',
-        'rd_title',
-        'rd_interwiki',
-        'rd_fragment'
-    ])
-writer = csv.DictWriter(sys.stdout, fieldnames=['id', 'title'], dialect='unix', quoting=csv.QUOTE_MINIMAL)
+reader = csv.reader(sys.stdin)
+writer = csv.writer(sys.stdout, dialect='unix', quoting=csv.QUOTE_MINIMAL)
 
 for row in reader:
-    # 0 are articles
-    if (row['rd_namespace'] != '0'):
+    # namespace: 0 are articles
+    if (row[1] != '0'):
         continue
 
-    title = row['rd_title'].replace('\r', '')
+    title = row[2].replace('\r', '')
     if len(title) == 0:
         continue
 
-    writer.writerow({'id': row['rd_from'], 'title': title})
+    writer.writerow([row[0], title])
