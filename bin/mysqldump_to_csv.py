@@ -71,7 +71,7 @@ def parse_values(values, outfile):
                     # as:
                     #    1) the previous entry ended in a )
                     #    2) the current entry starts with a (
-                    if latest_row[-1][-1] == ")":
+                    if (latest_row[-1] and latest_row[-1][-1] == ")"):
                         # Remove the close paren.
                         latest_row[-1] = latest_row[-1][:-1]
                         new_row = True
