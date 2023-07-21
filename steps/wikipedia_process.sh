@@ -59,15 +59,6 @@ do
 done
 
 
-echo "add underscores to langlinks.ll_title"
-# langlinks table contain titles with spaces, e.g. 'one (two)' while pages and
-# pagelinkcount table contain titles with underscore, e.g. 'one_(two)'
-for LANG in "${LANGUAGES_ARRAY[@]}"
-do
-    echo "UPDATE ${LANG}langlinks SET ll_title = REPLACE(ll_title, ' ', '_')
-         ;" | psqlcmd
-done
-
 echo "set othercounts"
 for LANG in "${LANGUAGES_ARRAY[@]}"
 do
