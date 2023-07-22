@@ -126,7 +126,7 @@ for TABLE in wikipedia_article wikipedia_redirect wikimedia_importance
 do
       echo "* $TABLE.csv.gz"
 
-      echo "COPY $TABLE  " | \
+      echo "COPY $TABLE TO STDOUT" | \
             psqlcmd | \
             sort | \
             pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"

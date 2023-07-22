@@ -21,8 +21,8 @@ in the results match the search terms).
 
 Wikipedia publishes [dumps](https://meta.wikimedia.org/wiki/Data_dumps) of their databases once per month.
 
-To run one build you need 240GB of disc space (of which 180GB Postgresql database). The scripts process
-39 languages and output 4 files. Runtime is approximately 13 hours on a 4 core, 4GB RAM machine with SSD
+To run one build you need 160GB of disc space (of which 105GB Postgresql database). The scripts process
+39 languages and output 4 files. Runtime is approximately 9 hours on a 4 core, 4GB RAM machine with SSD
 discs.
 
 ```
@@ -257,7 +257,7 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
 
    Runs 300 SPARQL queries against wikidata servers. Output is 5GB.
 
-5. wikipedia_sql2csv (5h)
+5. wikipedia_sql2csv (4:00h)
    
    The MySQL SQL files get parsed sequentially and we try to exclude as much data (rows,
    columns) as possible. Output is 75% smaller than input. Any work done here cuts
@@ -268,8 +268,8 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
   
    ```
    [language en] Page table      (0:06h)
-   [language en] Pagelinks table (1:00h)
-   [language en] langlinks table (0:01h)
+   [language en] Pagelinks table (0:50h)
+   [language en] langlinks table (0:02h)
    [language en] redirect table  (0:01h)
    ```
 
@@ -281,20 +281,21 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
 	wb_items_per_site (0:07h)
    ```
 
-7. wikipedia\_import, wikidata\_import (0:40h)
+7. wikipedia\_import, wikidata\_import (0:10h)
 
    Given the number of rows a pretty efficient loading of data into Postgresql.
 
    English database tables
 
    ```
+   enlanglinks        |  28,365,965 rows | 1762 MB
    enpage             |  17,211,555 rows | 946 MB
    enpagelinkcount    |  27,792,966 rows | 2164 MB
    enpagelinks        |  61,310,384 rows | 3351 MB
    enredirect         |  10,804,606 rows | 599 MB
    ```
 
-8. wikipedia\_process, wikidata\_process (5:00h)
+8. wikipedia\_process, wikidata\_process (3:00h)
 
    Postgresql is great joining large datasets together, especially if not all
    data fits into RAM.
