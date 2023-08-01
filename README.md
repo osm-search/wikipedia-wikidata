@@ -21,8 +21,8 @@ in the results match the search terms).
 
 Wikipedia publishes [dumps](https://meta.wikimedia.org/wiki/Data_dumps) of their databases once per month.
 
-To run one build you need 420GB of disc space (of which 360GB Postgresql database). The scripts process
-39 languages and output 4 files. Runtime is approximately 24 hours on a 4 core, 4GB RAM machine with SSD
+To run one build you need 160GB of disc space (of which 105GB Postgresql database). The scripts process
+39 languages and output 4 files. Runtime is approximately 9 hours on a 4 core, 4GB RAM machine with SSD
 discs.
 
 ```
@@ -57,13 +57,18 @@ is sorted.
 |   Column    |       Type       |
 | ----------- | ---------------- |
 | language    | text             |
+| type        | char             |
 | title       | text             |
 | importance  | double precision |
 | wikidata_id | text             |
 
 All columns are filled with values.
 
-Combination of language+title are unique.
+Combination of language+title (and language+type+title) are unique.
+
+Type is either 'a' (article) or 'r' (redirect).
+
+Maximum title length is 247.
 
 Importance is between 0.0000000001 (never 0) and 1.
 
@@ -84,34 +89,36 @@ Examples of `wikimedia_importance.csv.gz` rows:
 * Wikipedia contains redirects, so a single wikidata object can have multiple titles even though. Each title has the same importance score. Redirects to non-existing articles are removed.
 
     ```
-    en,Brandenburger_gate,0.5521887760090184,Q82425
-    en,Brandenburger_Gate,0.5521887760090184,Q82425
-    en,Brandenburger_Tor,0.5521887760090184,Q82425
-    en,Brandenburg_gate,0.5521887760090184,Q82425
-    en,Brandenburg_Gate,0.5521887760090184,Q82425
-    en,BRANDENBURG_GATE,0.5521887760090184,Q82425
-    en,Brandenburg_Gates,0.5521887760090184,Q82425
-    en,Brandenburg_Tor,0.5521887760090184,Q82425
+    en,a,Brandenburg_Gate,0.5531125195487524,Q82425
+    en,r,Berlin's_Gate,0.5531125195487524,Q82425
+    en,r,Brandenberg_Gate,0.5531125195487524,Q82425
+    en,r,Brandenburger_gate,0.5531125195487524,Q82425
+    en,r,Brandenburger_Gate,0.5531125195487524,Q82425
+    en,r,Brandenburger_Tor,0.5531125195487524,Q82425
+    en,r,Brandenburg_gate,0.5531125195487524,Q82425
+    en,r,BRANDENBURG_GATE,0.5531125195487524,Q82425
+    en,r,Brandenburg_Gates,0.5531125195487524,Q82425
+    en,r,Brandenburg_Tor,0.5531125195487524,Q82425
     ```
 
 * Wikipedia titles contain underscores instead of space, e.g. [Alford,_Massachusetts](https://en.wikipedia.org/wiki/Alford,_Massachusetts)
 
     ```
-    en,"Alford,_ma",0.3659818647022956,Q2431901
-    en,"Alford,_MA",0.3659818647022956,Q2431901
-    en,"Alford,_Mass",0.3659818647022956,Q2431901
-    en,"Alford,_Massachusetts",0.3659818647022956,Q2431901
+    en,a,"Alford,_Massachusetts",0.36590368314334637,Q2431901
+    en,r,"Alford,_ma",0.36590368314334637,Q2431901
+    en,r,"Alford,_MA",0.36590368314334637,Q2431901
+    en,r,"Alford,_Mass",0.36590368314334637,Q2431901
     ```
 
 * The highest score article is the [United States](https://en.wikipedia.org/wiki/United_States) 
 
     ```
-    pl,Stany_Zjednoczone,1,Q30
-    en,United_States,1,Q30
-    ru,Соединённые_Штаты_Америки,1,Q30
-    hu,Amerikai_Egyesült_Államok,1,Q30
-    it,Stati_Uniti_d'America,1,Q30
-    de,Vereinigte_Staaten,1,Q30
+    pl,a,Stany_Zjednoczone,1,Q30
+    en,a,United_States,1,Q30
+    ru,a,Соединённые_Штаты_Америки,1,Q30
+    hu,a,Amerikai_Egyesült_Államok,1,Q30
+    it,a,Stati_Uniti_d'America,1,Q30
+    de,a,Vereinigte_Staaten,1,Q30
     ...
     ```
 
@@ -250,57 +257,51 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
 
    Runs 300 SPARQL queries against wikidata servers. Output is 5GB.
 
-5. wikipedia_sql2csv (15h)
+5. wikipedia_sql2csv (4:00h)
    
-   By far the longest step, 70% of the build is spend here.
-  
    The MySQL SQL files get parsed sequentially and we try to exclude as much data (rows,
    columns) as possible. Output is 75% smaller than input. Any work done here cuts
    down the time (and space) needed in the database (database used to be 1TB before
    this step).
   
-   Command-line tools are great for processing sequential data but piping data through 4
-   tools could be replaced by a single custom script later.
-   
    Most time is spend on the Pagelinks table
   
    ```
-   [language en] Page table      (0:22h)
-   [language en] Pagelinks table (3:00h)
-   [language en] langlinks table (0:05h)
-   [language en] redirect table  (0:02h)
+   [language en] Page table      (0:06h)
+   [language en] Pagelinks table (0:50h)
+   [language en] langlinks table (0:02h)
+   [language en] redirect table  (0:01h)
    ```
 
-6. wikidata_sql2csv (1h)
+6. wikidata_sql2csv (0:15h)
 
    ```
-	geo_tags          (0:02h)
-	page              (0:40h)
-	wb_items_per_site (0:20h)
+	geo_tags          (0:01h)
+	page              (0:09h)
+	wb_items_per_site (0:07h)
    ```
 
-7. wikipedia\_import, wikidata\_import (0:40h)
+7. wikipedia\_import, wikidata\_import (0:10h)
 
    Given the number of rows a pretty efficient loading of data into Postgresql.
 
    English database tables
 
    ```
+   enlanglinks        |  28,365,965 rows | 1762 MB
    enpage             |  17,211,555 rows | 946 MB
    enpagelinkcount    |  27,792,966 rows | 2164 MB
-   enpagelinks        | 846,265,838 rows | 42 GB
+   enpagelinks        |  61,310,384 rows | 3351 MB
    enredirect         |  10,804,606 rows | 599 MB
    ```
 
-8. wikipedia\_process, wikidata\_process (5:00h)
+8. wikipedia\_process, wikidata\_process (3:00h)
 
    Postgresql is great joining large datasets together, especially if not all
    data fits into RAM.
 
    ```
-   Process language tables and associated pagelink counts (1:00h)
-   set counts                                             (1:00h)
-   add underscores to langlinks.ll_title                  (0:20h)
+   set counts                                             (0:15h)
    set othercounts                                        (2:30h)
    Create and fill wikipedia_article_full                 (0.03h)
    Create derived tables                                  (0.03h)

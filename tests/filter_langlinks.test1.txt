@@ -1,0 +1,6 @@
+2074847,tr,Berlin dövlət kitabxanası
+291145,tr,Berlin döyüşü (1945)
+52637892,tr,Berlin hücumu (2016)
+494808,tr,Berlin kafedralı
+438617,tr,Berlin konqresi
+1234,de,"Berlin, Berlin"

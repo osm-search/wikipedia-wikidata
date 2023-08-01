@@ -38,13 +38,9 @@ do
     #   output 190MB compressed
     # Output columns: page_id, page_title
 
-    unpigz -c $DOWNLOADED_PATH/${LANG}/page.sql.gz | \
-    python3 bin/mysqldump_to_csv.py | \
-    sed 's/\x0//g' | \
-    sed 's/\r\?//g' | \
-    csvcut -c 1,3,2 | \
-    grep -e ',0$' | \
-    sed 's/,0$//' | \
+    unpigz -c $DOWNLOADED_PATH/$LANG/page.sql.gz | \
+    ./bin/mysqldump_to_csv.py | \
+    bin/filter_page.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/pages.csv.gz
 
 
@@ -59,16 +55,11 @@ do
     # English wikipedia:
     #   input 6.8GB compressed (54GB uncompressed)
     #   output 450MB compressed (3.1GB uncompressed)
-    # Output columns: pl_title
+    # Output columns: pl_title, count
 
-    unpigz -c $DOWNLOADED_PATH/${LANG}/pagelinks.sql.gz | \
-    python3 bin/mysqldump_to_csv.py | \
-    sed 's/\x0//g' | \
-    sed 's/\r\?//g' | \
-    csvcut -c 3,2 | \
-    grep -e ',0$' | \
-    sed 's/,0$//' | \
-    grep -v '^$' | \
+    unpigz -c $DOWNLOADED_PATH/$LANG/pagelinks.sql.gz | \
+    ./bin/mysqldump_to_csv.py | \
+    /usr/bin/time -v bin/filter_pagelinks.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/pagelinks.csv.gz
 
 
@@ -85,10 +76,8 @@ do
     #   output 380MB compressed (1.3GB uncompressed)
 
     unpigz -c $DOWNLOADED_PATH/${LANG}/langlinks.sql.gz | \
-    python3 bin/mysqldump_to_csv.py | \
-    sed 's/\x0//g' | \
-    sed 's/\r\?//g' | \
-    csvcut -c 3,1,2 | \
+    ./bin/mysqldump_to_csv.py | \
+    bin/filter_langlinks.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/langlinks.csv.gz
 
 
@@ -106,13 +95,9 @@ do
     #   input 140MB compressed (530MB uncompressed)
     #   output 100MB compressed (300MB uncompressed)
 
-    unpigz -c $DOWNLOADED_PATH/${LANG}/redirect.sql.gz | \
-    python3 bin/mysqldump_to_csv.py | \
-    sed 's/\x0//g' | \
-    sed 's/\r\?//g' | \
-    csvcut -c 1,3,2 | \
-    grep -e ',0$' | \
-    sed 's/,0$//' | \
+    unpigz -c $DOWNLOADED_PATH/$LANG/redirect.sql.gz | \
+    ./bin/mysqldump_to_csv.py | \
+    bin/filter_redirect.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/redirect.csv.gz
 
     du -h $CONVERTED_PATH/$LANG/*

@@ -55,7 +55,8 @@ def parse_values(values, outfile):
         for column in reader_row:
             # If our current string is empty...
             if len(column) == 0 or column == 'NULL':
-                latest_row.append(chr(0))
+                # latest_row.append(chr(0))
+                latest_row.append('')
                 continue
             # If our string starts with an open paren
             if column[0] == "(":
@@ -70,7 +71,7 @@ def parse_values(values, outfile):
                     # as:
                     #    1) the previous entry ended in a )
                     #    2) the current entry starts with a (
-                    if latest_row[-1][-1] == ")":
+                    if (latest_row[-1] and latest_row[-1][-1] == ")"):
                         # Remove the close paren.
                         latest_row[-1] = latest_row[-1][:-1]
                         new_row = True

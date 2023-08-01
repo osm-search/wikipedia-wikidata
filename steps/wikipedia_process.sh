@@ -42,46 +42,7 @@ echo "====================================================================="
 echo "Process language tables and associated pagelink counts"
 echo "====================================================================="
 
-echo "DROP TABLE IF EXISTS linkcounts;" | psqlcmd
-echo "CREATE TABLE linkcounts (
-        language text,
-        title    text,
-        count    integer
-     );"  | psqlcmd
 
-echo "set counts"
-for LANG in "${LANGUAGES_ARRAY[@]}"
-do
-    echo "Language: $LANG"
-
-    echo "DROP TABLE IF EXISTS ${LANG}pagelinkcount;" | psqlcmd
-    echo "CREATE TABLE ${LANG}pagelinkcount
-          AS
-          SELECT pl_title AS title,
-                 COUNT(*) AS langcount,
-                 0::bigint as othercount
-          FROM ${LANG}pagelinks
-          GROUP BY pl_title
-          ;" | psqlcmd
-
-    echo "INSERT INTO linkcounts
-          SELECT '${LANG}',
-                 pl_title,
-                 COUNT(*)
-          FROM ${LANG}pagelinks
-          GROUP BY pl_title
-          ;" | psqlcmd
-done
-
-
-echo "add underscores to langlinks.ll_title"
-# langlinks table contain titles with spaces, e.g. 'one (two)' while pages and
-# pagelinkcount table contain titles with underscore, e.g. 'one_(two)'
-for LANG in "${LANGUAGES_ARRAY[@]}"
-do
-    echo "UPDATE ${LANG}langlinks SET ll_title = REPLACE(ll_title, ' ', '_')
-         ;" | psqlcmd
-done
 
 echo "set othercounts"
 for LANG in "${LANGUAGES_ARRAY[@]}"
@@ -92,16 +53,16 @@ do
     do
         # Creating indexes on title, ll_title didn't have any positive effect on
         # query performance and added another 35GB of data.
-        echo "UPDATE ${LANG}pagelinkcount
+        echo "UPDATE ${LANG}pagelinks
               SET othercount = othercount + x.count
               FROM (
                 SELECT ${LANG}page.page_title AS title,
-                       ${OTHERLANG}pagelinkcount.langcount AS count
+                       ${OTHERLANG}pagelinks.langcount AS count
                 FROM ${LANG}langlinks
                 JOIN ${LANG}page ON (ll_from = page_id)
-                JOIN ${OTHERLANG}pagelinkcount ON (ll_lang = '${OTHERLANG}' AND ll_title = title)
+                JOIN ${OTHERLANG}pagelinks ON (ll_lang = '${OTHERLANG}' AND ll_title = pl_title)
               ) AS x
-              WHERE x.title = ${LANG}pagelinkcount.title
+              WHERE x.title = ${LANG}pagelinks.pl_title
               ;" | psqlcmd
     done
 
@@ -132,11 +93,11 @@ for LANG in "${LANGUAGES_ARRAY[@]}"
 do
     echo "INSERT INTO wikipedia_article_full
           SELECT '${LANG}',
-                 title,
+                 pl_title,
                  langcount,
                  othercount,
                  langcount + othercount
-          FROM ${LANG}pagelinkcount
+          FROM ${LANG}pagelinks
           ;" | psqlcmd
 done
 

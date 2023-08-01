@@ -57,13 +57,13 @@ echo "* wikimedia_importance"
 
 echo "DROP TABLE IF EXISTS wikimedia_importance;" | psqlcmd
 echo "CREATE TABLE wikimedia_importance AS
-      SELECT language, title, importance, wd_page_title as wikidata_id
+      SELECT language, 'a' as type, title, importance, wd_page_title as wikidata_id
       FROM wikipedia_article
       ;" | psqlcmd
 
 # Now add the same from redirects, unless (language + title) already exists in wikimedia_importance
 echo "WITH from_redirects AS (
-          SELECT r.language, r.from_title as title, a.importance, a.wd_page_title AS wikidata_id
+          SELECT r.language, 'r' as type, r.from_title as title, a.importance, a.wd_page_title AS wikidata_id
           FROM wikipedia_article a, wikipedia_redirect r
           WHERE a.language = r.language AND a.title = r.to_title
       )
@@ -126,7 +126,7 @@ for TABLE in wikipedia_article wikipedia_redirect wikimedia_importance
 do
       echo "* $TABLE.csv.gz"
 
-      echo "COPY $TABLE TO STDOUT CSV HEADER;" | \
+      echo "COPY $TABLE TO STDOUT" | \
             psqlcmd | \
             sort | \
             pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"
