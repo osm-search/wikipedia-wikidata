@@ -35,11 +35,11 @@ do
     # Only interested in page_namespace == 0 (articles)
     # English wikipedia:
     #   input 1.9GB compressed
-    #   output 190MB compressed
+    #   output 200MB compressed
     # Output columns: page_id, page_title
 
     unpigz -c $DOWNLOADED_PATH/$LANG/page.sql.gz | \
-    ./bin/mysqldump_to_csv.py | \
+    bin/mysqldump_to_csv.py | \
     bin/filter_page.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/pages.csv.gz
 
@@ -53,13 +53,13 @@ do
     #
     # Only interested in pl_namespace == 0 (articles)
     # English wikipedia:
-    #   input 6.8GB compressed (54GB uncompressed)
-    #   output 450MB compressed (3.1GB uncompressed)
+    #   input 6.8GB compressed
+    #   output 200MB compressed
     # Output columns: pl_title, count
 
     unpigz -c $DOWNLOADED_PATH/$LANG/pagelinks.sql.gz | \
-    ./bin/mysqldump_to_csv.py | \
-    /usr/bin/time -v bin/filter_pagelinks.py | \
+    bin/mysqldump_to_csv.py | \
+    bin/filter_pagelinks.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/pagelinks.csv.gz
 
 
@@ -73,10 +73,10 @@ do
     # Output is sorted by lang
     # English wikipedia:
     #   input 400MB compressed (1.5GB uncompressed)
-    #   output 380MB compressed (1.3GB uncompressed)
+    #   output 310MB compressed (1.3GB uncompressed)
 
     unpigz -c $DOWNLOADED_PATH/${LANG}/langlinks.sql.gz | \
-    ./bin/mysqldump_to_csv.py | \
+    bin/mysqldump_to_csv.py | \
     bin/filter_langlinks.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/langlinks.csv.gz
 
@@ -93,10 +93,10 @@ do
     # Output columns: rd_from_page_id, rd_title
     # English wikipedia:
     #   input 140MB compressed (530MB uncompressed)
-    #   output 100MB compressed (300MB uncompressed)
+    #   output 120MB compressed (300MB uncompressed)
 
     unpigz -c $DOWNLOADED_PATH/$LANG/redirect.sql.gz | \
-    ./bin/mysqldump_to_csv.py | \
+    bin/mysqldump_to_csv.py | \
     bin/filter_redirect.py | \
     pigz -9 > $CONVERTED_PATH/$LANG/redirect.csv.gz
 

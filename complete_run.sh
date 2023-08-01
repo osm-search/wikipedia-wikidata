@@ -20,7 +20,6 @@ export BUILDID=wikimedia_build_$(date +"%Y%m%d")
 export LANGUAGES=$(grep -v '^#' config/languages.txt | tr "\n" ",")
 # export LANGUAGES=de,nl
 export DATABASE_NAME=$BUILDID
-export DATABASE_TABLESPACE=extraspace # default is pg_default
 
 ./steps/wikipedia_download.sh
 ./steps/wikidata_download.sh
@@ -30,7 +29,7 @@ export DATABASE_TABLESPACE=extraspace # default is pg_default
 ./steps/wikidata_sql2csv.sh
 
 # dropdb --if-exists $DATABASE_NAME
-createdb --tablespace=$DATABASE_TABLESPACE $DATABASE_NAME
+createdb $DATABASE_NAME
 ./steps/wikipedia_import.sh
 ./steps/wikidata_import.sh
 
