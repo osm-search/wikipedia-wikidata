@@ -21,7 +21,7 @@ in the results match the search terms).
 
 Wikipedia publishes [dumps](https://meta.wikimedia.org/wiki/Data_dumps) of their databases once per month.
 
-To run one build you need 160GB of disc space (of which 105GB Postgresql database). The scripts process
+To run one build you need 150GB of disc space (of which 90GB Postgresql database). The scripts process
 39 languages and output 4 files. Runtime is approximately 9 hours on a 4 core, 4GB RAM machine with SSD
 discs.
 
@@ -243,7 +243,7 @@ the `languages.txt` file to only run a small language (e.g. Bulgarian) first.
 1. latest\_available\_data
 
    Prints a date. Wikipedia exports take many days, then mirrors are sometimes slow copying them. It's not
-uncommon for an export starting Jan/1st to only be full ready Jan/20th.
+uncommon for an export starting Jan/1st to only be full ready Jan/10th or later.
 
 2. wikipedia_download (1h)
 
@@ -257,7 +257,7 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
 
    Runs 300 SPARQL queries against wikidata servers. Output is 5GB.
 
-5. wikipedia_sql2csv (4:00h)
+5. wikipedia_sql2csv (4:20h)
    
    The MySQL SQL files get parsed sequentially and we try to exclude as much data (rows,
    columns) as possible. Output is 75% smaller than input. Any work done here cuts
@@ -295,14 +295,13 @@ uncommon for an export starting Jan/1st to only be full ready Jan/20th.
    enredirect         |  10,804,606 rows | 599 MB
    ```
 
-8. wikipedia\_process, wikidata\_process (3:00h)
+8. wikipedia\_process, wikidata\_process (2:30h)
 
    Postgresql is great joining large datasets together, especially if not all
    data fits into RAM.
 
    ```
-   set counts                                             (0:15h)
-   set othercounts                                        (2:30h)
+   set othercounts                                        (2:20h)
    Create and fill wikipedia_article_full                 (0.03h)
    Create derived tables                                  (0.03h)
    Process language pages                                 (0.03h)
