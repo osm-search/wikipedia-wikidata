@@ -51,8 +51,8 @@ retries (wikidata API being unreliable) was added.
 
 ## Output data
 
-`wikimedia_importance.csv.gz` contains about 17 million rows. Number of lines grew 2% between 2022 and 2023. The file
-is sorted.
+`wikimedia_importance.csv.gz` contains about 17 million rows. Number of lines grew 2% between 2022 and 2023.
+The file tab delimited, not quoted, is sorted and contains a header row.
 
 |   Column    |       Type       |
 | ----------- | ---------------- |
@@ -89,36 +89,36 @@ Examples of `wikimedia_importance.csv.gz` rows:
 * Wikipedia contains redirects, so a single wikidata object can have multiple titles even though. Each title has the same importance score. Redirects to non-existing articles are removed.
 
     ```
-    en,a,Brandenburg_Gate,0.5531125195487524,Q82425
-    en,r,Berlin's_Gate,0.5531125195487524,Q82425
-    en,r,Brandenberg_Gate,0.5531125195487524,Q82425
-    en,r,Brandenburger_gate,0.5531125195487524,Q82425
-    en,r,Brandenburger_Gate,0.5531125195487524,Q82425
-    en,r,Brandenburger_Tor,0.5531125195487524,Q82425
-    en,r,Brandenburg_gate,0.5531125195487524,Q82425
-    en,r,BRANDENBURG_GATE,0.5531125195487524,Q82425
-    en,r,Brandenburg_Gates,0.5531125195487524,Q82425
-    en,r,Brandenburg_Tor,0.5531125195487524,Q82425
+    en	a	Brandenburg_Gate	0.5531125195487524	Q82425
+    en	r	Berlin's_Gate	0.5531125195487524	Q82425
+    en	r	Brandenberg_Gate	0.5531125195487524	Q82425
+    en	r	Brandenburger_gate	0.5531125195487524	Q82425
+    en	r	Brandenburger_Gate	0.5531125195487524	Q82425
+    en	r	Brandenburger_Tor	0.5531125195487524	Q82425
+    en	r	Brandenburg_gate	0.5531125195487524	Q82425
+    en	r	BRANDENBURG_GATE	0.5531125195487524	Q82425
+    en	r	Brandenburg_Gates	0.5531125195487524	Q82425
+    en	r	Brandenburg_Tor	0.5531125195487524	Q82425
     ```
 
 * Wikipedia titles contain underscores instead of space, e.g. [Alford,_Massachusetts](https://en.wikipedia.org/wiki/Alford,_Massachusetts)
 
     ```
-    en,a,"Alford,_Massachusetts",0.36590368314334637,Q2431901
-    en,r,"Alford,_ma",0.36590368314334637,Q2431901
-    en,r,"Alford,_MA",0.36590368314334637,Q2431901
-    en,r,"Alford,_Mass",0.36590368314334637,Q2431901
+    en	a	"Alford	_Massachusetts"	0.36590368314334637	Q2431901
+    en	r	"Alford	_ma"	0.36590368314334637	Q2431901
+    en	r	"Alford	_MA"	0.36590368314334637	Q2431901
+    en	r	"Alford	_Mass"	0.36590368314334637	Q2431901
     ```
 
 * The highest score article is the [United States](https://en.wikipedia.org/wiki/United_States) 
 
     ```
-    pl,a,Stany_Zjednoczone,1,Q30
-    en,a,United_States,1,Q30
-    ru,a,Соединённые_Штаты_Америки,1,Q30
-    hu,a,Amerikai_Egyesült_Államok,1,Q30
-    it,a,Stati_Uniti_d'America,1,Q30
-    de,a,Vereinigte_Staaten,1,Q30
+    pl	a	Stany_Zjednoczone	1	Q30
+    en	a	United_States	1	Q30
+    ru	a	Соединённые_Штаты_Америки	1	Q30
+    hu	a	Amerikai_Egyesült_Államok	1	Q30
+    it	a	Stati_Uniti_d'America	1	Q30
+    de	a	Vereinigte_Staaten	1	Q30
     ...
     ```
 
