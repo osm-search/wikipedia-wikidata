@@ -126,10 +126,13 @@ for TABLE in wikipedia_article wikipedia_redirect wikimedia_importance
 do
       echo "* $TABLE.csv.gz"
 
-      echo "COPY $TABLE TO STDOUT" | \
-            psqlcmd | \
-            sort | \
-            pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"
+      {
+            echo "COPY (SELECT * FROM $TABLE LIMIT 0) TO STDOUT WITH DELIMITER E'\t' CSV HEADER" | \
+                  psqlcmd
+            echo "COPY $TABLE TO STDOUT" | \
+                  psqlcmd | \
+                  sort
+      } | pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"
 
       # default is 600
       chmod 644 "$OUTPUT_PATH/$TABLE.csv.gz"
