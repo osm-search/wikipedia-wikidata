@@ -122,16 +122,50 @@ pg_dump -d $DATABASE_NAME --no-owner -t wikipedia_article -t wikipedia_redirect 
         pigz -9 > "$OUTPUT_PATH/wikipedia_importance.sql.gz"
 
 
+# Temporary table for sorting the output by most popular language. Nominatim assigns
+# the wikipedia extra tag to the first language it finds during import and English (en)
+# makes debugging easier than Arabic (ar).
+# Not a temporary table actually because with each psqlcmd call we start a new
+# session.
+#
+#  language |  size
+# ----------+---------
+#  en       | 3360898
+#  de       |  989366
+#  fr       |  955523
+#  uk       |  920531
+#  sv       |  918185
+
+echo "DROP TABLE IF EXISTS top_languages;" | psqlcmd
+echo "CREATE TABLE top_languages AS
+      SELECT language, COUNT(*) AS size
+      FROM wikimedia_importance
+      GROUP BY language
+      ORDER BY size DESC
+      ;" | psqlcmd
+
+
+
+
 for TABLE in wikipedia_article wikipedia_redirect wikimedia_importance
 do
       echo "* $TABLE.csv.gz"
 
+      SORTCOL="title"
+      if [[ "$TABLE" == "wikipedia_redirect" ]]; then
+            SORTCOL="from_title"
+      fi
+
       {
             echo "COPY (SELECT * FROM $TABLE LIMIT 0) TO STDOUT WITH DELIMITER E'\t' CSV HEADER" | \
                   psqlcmd
-            echo "COPY $TABLE TO STDOUT" | \
-                  psqlcmd | \
-                  sort
+            echo "COPY (
+                        SELECT w.*
+                        FROM $TABLE w
+                        JOIN top_languages tl ON w.language = tl.language
+                        ORDER BY tl.size DESC, w.$SORTCOL
+                  ) TO STDOUT" | \
+                  psqlcmd
       } | pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"
 
       # default is 600
@@ -143,4 +177,4 @@ du -h $OUTPUT_PATH/*
 # 220M  wikipedia_article.csv.gz
 # 87M   wikipedia_redirect.csv.gz
 # 305M  wikipedia_importance.sql.gz
-# 87M   wikimedia_importance.csv.gz
+# 265M  wikimedia_importance.csv.gz
