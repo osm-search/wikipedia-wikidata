@@ -21,15 +21,12 @@ in the results match the search terms).
 
 Wikipedia publishes [dumps](https://meta.wikimedia.org/wiki/Data_dumps) of their databases once per month.
 
-To run one build you need 150GB of disc space (of which 90GB Postgresql database). The scripts process
-39 languages and output 4 files. Runtime is approximately 9 hours on a 4 core, 4GB RAM machine with SSD
+To run one build you need 150GB of disc space (of which 90GB is Postgresql database). The scripts process
+39 languages and output one file. Runtime is approximately 9 hours on a 4 core, 4GB RAM machine with SSD
 discs.
 
 ```
-334M wikimedia_importance.csv.gz # the primary file
-303M wikipedia_importance.sql.gz
-216M wikipedia_article.csv.gz
- 88M  wikipedia_redirect.csv.gz
+334M wikimedia_importance.tsv.gz
 ```
 
 
@@ -51,7 +48,7 @@ retries (wikidata API being unreliable) was added.
 
 ## Output data
 
-`wikimedia_importance.csv.gz` contains about 17 million rows. Number of lines grew 2% between 2022 and 2023.
+`wikimedia_importance.tsv.gz` contains about 17 million rows. Number of lines grew 2% between 2022 and 2023.
 The file tab delimited, not quoted, is sorted and contains a header row.
 
 |   Column    |       Type       |
@@ -84,7 +81,7 @@ Currently 39 languages, English has by far the largest share.
 | ...            |                  |
 | bg (Bulgarian) |    88,993        |
  
-Examples of `wikimedia_importance.csv.gz` rows:
+Examples of `wikimedia_importance.tsv.gz` rows:
 
 * Wikipedia contains redirects, so a single wikidata object can have multiple titles even though. Each title has the same importance score. Redirects to non-existing articles are removed.
 
@@ -311,7 +308,7 @@ uncommon for an export starting Jan/1st to only be full ready Jan/10th or later.
    
 9. output (0:15h)
    
-   Uses `pg_dump` tool to create SQL files. Uses SQL `COPY` command to create CSV files.
+   Uses `pg_dump` tool to create SQL files. Uses SQL `COPY` command to create TSV file.
 
 
 License
