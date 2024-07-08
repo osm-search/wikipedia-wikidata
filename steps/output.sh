@@ -88,38 +88,11 @@ echo "WITH from_redirects AS (
 
 
 
-# "====================================================================="
-echo "Create indexes"
-# "====================================================================="
-
-echo "CREATE INDEX wikipedia_article_title_language_idx
-      ON wikipedia_article
-      (title, language)
-      ;" | psqlcmd
-echo "CREATE INDEX wikipedia_article_wd_page_title_idx
-      ON wikipedia_article
-      (wd_page_title)
-      ;" | psqlcmd
-echo "CREATE INDEX wikipedia_redirect_language_from_title_idx
-      ON wikipedia_redirect
-      (language, from_title)
-      ;" | psqlcmd
-
-
 
 
 # "====================================================================="
-echo "Dump tables"
+echo "Dump table"
 # "====================================================================="
-
-echo "* wikipedia_importance.sql.gz"
-
-pg_dump -d $DATABASE_NAME --no-owner -t wikipedia_article -t wikipedia_redirect | \
-        grep -v '^SET ' | \
-        grep -v 'SELECT ' | \
-        grep -v '\-\- ' | \
-        sed 's/public\.//' | \
-        pigz -9 > "$OUTPUT_PATH/wikipedia_importance.sql.gz"
 
 
 # Temporary table for sorting the output by most popular language. Nominatim assigns
@@ -147,34 +120,23 @@ echo "CREATE TABLE top_languages AS
 
 
 
-for TABLE in wikipedia_article wikipedia_redirect wikimedia_importance
-do
-      echo "* $TABLE.csv.gz"
+echo "* wikimedia_importance.tsv.gz"
 
-      SORTCOL="title"
-      if [[ "$TABLE" == "wikipedia_redirect" ]]; then
-            SORTCOL="from_title"
-      fi
+{
+      echo "COPY (SELECT * FROM wikimedia_importance LIMIT 0) TO STDOUT WITH DELIMITER E'\t' CSV HEADER" | \
+            psqlcmd
+      echo "COPY (
+                  SELECT w.*
+                  FROM wikimedia_importance w
+                  JOIN top_languages tl ON w.language = tl.language
+                  ORDER BY tl.size DESC, w.title
+            ) TO STDOUT" | \
+            psqlcmd
+} | pigz -9 > "$OUTPUT_PATH/wikimedia_importance.tsv.gz"
 
-      {
-            echo "COPY (SELECT * FROM $TABLE LIMIT 0) TO STDOUT WITH DELIMITER E'\t' CSV HEADER" | \
-                  psqlcmd
-            echo "COPY (
-                        SELECT w.*
-                        FROM $TABLE w
-                        JOIN top_languages tl ON w.language = tl.language
-                        ORDER BY tl.size DESC, w.$SORTCOL
-                  ) TO STDOUT" | \
-                  psqlcmd
-      } | pigz -9 > "$OUTPUT_PATH/$TABLE.csv.gz"
-
-      # default is 600
-      chmod 644 "$OUTPUT_PATH/$TABLE.csv.gz"
-done
+# default is 600
+chmod 644 "$OUTPUT_PATH/wikimedia_importance.tsv.gz"
 
 
 du -h $OUTPUT_PATH/*
-# 220M  wikipedia_article.csv.gz
-# 87M   wikipedia_redirect.csv.gz
-# 305M  wikipedia_importance.sql.gz
-# 265M  wikimedia_importance.csv.gz
+# 265M  wikimedia_importance.tsv.gz
