@@ -2,7 +2,8 @@
 
 ## Summary
 
-This project creates an export of Wikipedia articles (title, latitude, longitude) and an calculated importance score (0..1) for each.
+This project creates an export of Wikipedia articles (title, wikidata id) and an calculated importance score (0..1) for each.
+If Wikipedia has redirects to titles then each redirect is also added.
 
 The score can be used to approximate how important a place name is relative to another by the same name.
 
