@@ -12,11 +12,15 @@ if [[ "$OUT" != "4" ]]; then
     exit 1
 fi
 
-cat tests/filter_pagelinks.test1.txt | bin/filter_pagelinks.py > out.txt
+cat tests/linktargets.txt | gzip > tests/linktargets.txt.gz
+cat tests/filter_pagelinks.test1.txt | bin/filter_pagelinks.py tests/linktargets.txt.gz > out.txt
 diff --brief out.txt tests/filter_pagelinks.test1expected.txt || exit 1
+rm -f tests/linktargets.txt.gz
 
 cat tests/filter_langlinks.test1.txt | bin/filter_langlinks.py > out.txt
 diff --brief out.txt tests/filter_langlinks.test1expected.txt || exit 1
 
 cat tests/filter_wikidata_geo_tags.test1.txt | bin/filter_wikidata_geo_tags.py > out.txt
 diff --brief out.txt tests/filter_wikidata_geo_tags.test1expected.txt || exit 1
+
+rm -f out.txt

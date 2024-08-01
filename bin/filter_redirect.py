@@ -10,6 +10,12 @@ Input from STDIN
     #   `rd_fragment`     varbinary(255)             DEFAULT NULL,
 
 Output to STDOUT: rd_from_page_id, rd_title
+
+Same for linktarget table
+    # CREATE TABLE `linktarget` (
+    #   `lt_id`          bigint(20) unsigned  NOT NULL AUTO_INCREMENT,
+    #   `lt_namespace`   int(11)              NOT NULL,
+    #   `lt_title`       varbinary(255)       NOT NULL,
 '''
 
 import sys

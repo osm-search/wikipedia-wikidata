@@ -21,9 +21,9 @@ in the results match the search terms).
 
 Wikipedia publishes [dumps](https://meta.wikimedia.org/wiki/Data_dumps) of their databases once per month.
 
-To run one build you need 150GB of disc space (of which 90GB is Postgresql database). The scripts process
-39 languages and output one file. Runtime is approximately 9 hours on a 4 core, 4GB RAM machine with SSD
-discs.
+To run one build you need 150GB of disc space (of which 90GB Postgresql database). The scripts process
+39 languages and output 4 files. Runtime is approximately 9 hours on a 4 core, 4GB RAM machine with NVMe
+drives.
 
 ```
 334M wikimedia_importance.tsv.gz
