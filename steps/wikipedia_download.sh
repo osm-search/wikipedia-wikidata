@@ -11,13 +11,11 @@ echo "====================================================================="
 LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 # List of mirrors https://dumps.wikimedia.org/mirrors.html
 # Download using main dumps.wikimedia.org: 150 minutes, mirror: 40 minutes
-: ${WIKIMEDIA_HOST:=mirror.clarkson.edu/wikimedia}
-# See list on https://mirror.clarkson.edu/wikimedia/enwiki/
+: ${WIKIMEDIA_HOST:=wikidata.aerotechnet.com}
+# See list on https://wikidata.aerotechnet.com/enwiki/
 : ${WIKIPEDIA_DATE:=20220620}
 
-
 DOWNLOADED_PATH="$BUILDID/downloaded/wikipedia"
-
 
 download() {
     echo "Downloading $1 > $2"
@@ -35,8 +33,7 @@ download() {
     du -h "$2" | cut -f1
 }
 
-for LANG in "${LANGUAGES_ARRAY[@]}"
-do
+for LANG in "${LANGUAGES_ARRAY[@]}"; do
     echo "Language: $LANG"
 
     mkdir -p "$DOWNLOADED_PATH/$LANG"
@@ -55,13 +52,12 @@ do
     #  62M  downloaded/tr/linktarget.sql.gz
     # 4.2M  downloaded/tr/redirect.sql.gz
 
-  
     for FN in page.sql.gz pagelinks.sql.gz langlinks.sql.gz linktarget.sql.gz redirect.sql.gz; do
 
-        download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-$FN             "$DOWNLOADED_PATH/$LANG/$FN"
+        download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-$FN "$DOWNLOADED_PATH/$LANG/$FN"
         download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/md5sums-${LANG}wiki-$WIKIPEDIA_DATE-$FN.txt "$DOWNLOADED_PATH/$LANG/$FN.md5"
 
-        EXPECTED_MD5=$(cat "$DOWNLOADED_PATH/$LANG/$FN.md5"  | cut -d\  -f1)
+        EXPECTED_MD5=$(cat "$DOWNLOADED_PATH/$LANG/$FN.md5" | cut -d\  -f1)
         CALCULATED_MD5=$(md5sum "$DOWNLOADED_PATH/$LANG/$FN" | cut -d\  -f1)
 
         if [[ "$EXPECTED_MD5" != "$CALCULATED_MD5" ]]; then
