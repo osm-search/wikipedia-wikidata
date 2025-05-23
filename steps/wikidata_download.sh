@@ -8,10 +8,9 @@ echo "====================================================================="
 : ${BUILDID:=latest}
 # List of mirrors https://dumps.wikimedia.org/mirrors.html
 # Download using main dumps.wikimedia.org: 60 minutes, mirror: 20 minutes
-: ${WIKIMEDIA_HOST:=mirror.clarkson.edu/wikimedia}
-# See list on https://mirror.clarkson.edu/wikimedia/wikidatawiki/
+: ${WIKIMEDIA_HOST:=wikidata.aerotechnet.com}
+# See list on https://wikidata.aerotechnet.com/wikidatawiki/
 : ${WIKIDATA_DATE:=20220701}
-
 
 DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
 mkdir -p $DOWNLOADED_PATH
@@ -33,12 +32,12 @@ download() {
 
 for FN in geo_tags.sql.gz page.sql.gz wb_items_per_site.sql.gz; do
 
-    # https://mirror.clarkson.edu/wikimedia/wikidatawiki/20220620/wikidatawiki-20220620-geo_tags.sql.gz
-    # https://mirror.clarkson.edu/wikimedia/wikidatawiki/20220620/md5sums-wikidatawiki-20220620-geo_tags.sql.gz.txt
-    download https://$WIKIMEDIA_HOST/wikidatawiki/$WIKIDATA_DATE/wikidatawiki-$WIKIDATA_DATE-$FN             "$DOWNLOADED_PATH/$FN"
+    # https://wikidata.aerotechnet.com/wikidatawiki/20250501/wikidatawiki-20250501-geo_tags.sql.gz
+    # https://wikidata.aerotechnet.com/wikidatawiki/20250501/md5sums-wikidatawiki-20250501-geo_tags.sql.gz.txt
+    download https://$WIKIMEDIA_HOST/wikidatawiki/$WIKIDATA_DATE/wikidatawiki-$WIKIDATA_DATE-$FN "$DOWNLOADED_PATH/$FN"
     download https://$WIKIMEDIA_HOST/wikidatawiki/$WIKIDATA_DATE/md5sums-wikidatawiki-$WIKIDATA_DATE-$FN.txt "$DOWNLOADED_PATH/$FN.md5"
 
-    EXPECTED_MD5=$(cat "$DOWNLOADED_PATH/$FN.md5"  | cut -d\  -f1)
+    EXPECTED_MD5=$(cat "$DOWNLOADED_PATH/$FN.md5" | cut -d\  -f1)
     CALCULATED_MD5=$(md5sum "$DOWNLOADED_PATH/$FN" | cut -d\  -f1)
 
     if [[ "$EXPECTED_MD5" != "$CALCULATED_MD5" ]]; then

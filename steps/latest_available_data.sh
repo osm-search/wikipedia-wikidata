@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #
-# Prints a YYYYMMDD date of the latest available date on 
-# https://mirror.clarkson.edu/wikimedia/enwiki/
+# Prints a YYYYMMDD date of the latest available date on
+# https://wikidata.aerotechnet.com/enwiki/
 # We do some additional checks if the dumps are complete, too
 #
 
@@ -12,7 +12,6 @@ debug() {
     echo -n ''
 }
 
-
 DATE=''
 
 # Sets $DATE to first of the month (YYYYMMDD). If given a parameter then
@@ -21,12 +20,11 @@ set_date_to_first_of_month() {
     MINUS_NUM_MONTHS=${1:-0}
 
     if [[ "$(uname)" == "Darwin" ]]; then
-        DATE=$(date -v -${MINUS_NUM_MONTHS}m +%Y%m01) 
+        DATE=$(date -v -${MINUS_NUM_MONTHS}m +%Y%m01)
     else
-        DATE=$(date --date="-$MINUS_NUM_MONTHS month" +%Y%m01) 
+        DATE=$(date --date="-$MINUS_NUM_MONTHS month" +%Y%m01)
     fi
 }
-
 
 check_all_files_ready() {
     CHECK_DATE=$1
@@ -55,14 +53,13 @@ check_all_files_ready() {
 
     ANY_FILE_MISSING=0
 
-
     ##
     ## 1. Chinese (ZH) Wikipedia
     ## usually the last to be dumped
     ##
     # from wikipedia_download.sh
     WIKIPEDIA_REQUIRED_FILES="page pagelinks langlinks linktarget redirect"
-    DUMP_RUN_INFO_URL="https://mirror.clarkson.edu/wikimedia/zhwiki/$CHECK_DATE/dumpruninfo.json"
+    DUMP_RUN_INFO_URL="https://wikidata.aerotechnet.com/zhwiki/$CHECK_DATE/dumpruninfo.json"
     debug $DUMP_RUN_INFO_URL
     DUMP_RUN_INFO=$(curl -s --fail "$DUMP_RUN_INFO_URL")
 
@@ -70,7 +67,6 @@ check_all_files_ready() {
         debug "fetching from URL $DUMP_RUN_INFO_URL failed"
         return 1
     fi
-
 
     for FN in $WIKIPEDIA_REQUIRED_FILES; do
         TABLENAME=${FN//_/}table # redirect => redirecttable
@@ -85,15 +81,13 @@ check_all_files_ready() {
         fi
     done
 
-
-
     ##
     ## 2. Wikidata
     ##
     # from wikidata_download.sh
     WIKIDATA_REQUIRED_FILES="geo_tags page wb_items_per_site"
 
-    DUMP_RUN_INFO_URL="https://mirror.clarkson.edu/wikimedia/wikidatawiki/$CHECK_DATE/dumpruninfo.json"
+    DUMP_RUN_INFO_URL="https://wikidata.aerotechnet.com/wikidatawiki/$CHECK_DATE/dumpruninfo.json"
     debug $DUMP_RUN_INFO_URL
     DUMP_RUN_INFO=$(curl -s --fail "$DUMP_RUN_INFO_URL")
 
@@ -118,17 +112,15 @@ check_all_files_ready() {
     return $ANY_FILE_MISSING
 }
 
-
-
 #
 # Usually you might try to get a list of dates from
-# https://mirror.clarkson.edu/wikimedia/enwiki/ and then sort them, then look at status.html
+# https://wikidata.aerotechnet.com/enwiki/ and then sort them, then look at status.html
 # inside the directories.
 #
 # We want to avoid parsing HTML.
 #
 # Previous version of this script then looked at index.json
-# (https://mirror.clarkson.edu/wikimedia/index.json) but the file is written at beginning
+# (https://wikidata.aerotechnet.com/index.json) but the file is written at beginning
 # of the export so first of month it would list files that don't exist yet.
 #
 
