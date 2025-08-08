@@ -8,7 +8,7 @@
 
 debug() {
     # Comment out the following line to print debug information
-    # echo "$@" 1>&2;
+    # echo "$@" 1>&2
     echo -n ''
 }
 
@@ -112,23 +112,11 @@ check_all_files_ready() {
     return $ANY_FILE_MISSING
 }
 
+# Find dates in directory names. We need to parse HTML.
 #
-# Usually you might try to get a list of dates from
-# https://wikidata.aerotechnet.com/enwiki/ and then sort them, then look at status.html
-# inside the directories.
-#
-# We want to avoid parsing HTML.
-#
-# Previous version of this script then looked at index.json
-# (https://wikidata.aerotechnet.com/index.json) but the file is written at beginning
-# of the export so first of month it would list files that don't exist yet.
-#
-
-for MINUS_NUM_MONTHS in 0 1 2 3; do
-    set_date_to_first_of_month $MINUS_NUM_MONTHS
+CONTENT=$(curl -s -S --fail 'https://wikidata.aerotechnet.com/enwiki/')
+for DATE in $(echo $CONTENT | grep -oE '20[0-9]{6}' | sort -nr); do
     check_all_files_ready $DATE
-    # echo $?
-    # echo $RES
 
     if [ $? == 0 ]; then
         echo "$DATE"
