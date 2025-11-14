@@ -8,20 +8,17 @@ OUTPUT_PATH="$BUILDID/output"
 mkdir -p "$OUTPUT_PATH"
 
 psqlcmd() {
-     psql --quiet $DATABASE_NAME |& \
-     grep -v 'does not exist, skipping'
+      psql --quiet $DATABASE_NAME |&
+            grep -v 'does not exist, skipping'
 }
-
 
 echo "====================================================================="
 echo "Create output"
 echo "====================================================================="
 
-
 # "====================================================================="
 echo "Create tables"
 # "====================================================================="
-
 
 echo "* wikipedia_article (Less rows and columns than wikipedia_article_full)"
 # Remove rows that don't have a title. For redirect only row
@@ -85,15 +82,9 @@ echo "WITH from_redirects AS (
 
 # 17m rows
 
-
-
-
-
-
 # "====================================================================="
 echo "Dump table"
 # "====================================================================="
-
 
 # Temporary table for sorting the output by most popular language. Nominatim assigns
 # the wikipedia extra tag to the first language it finds during import and English (en)
@@ -117,26 +108,24 @@ echo "CREATE TABLE top_languages AS
       ORDER BY size DESC
       ;" | psqlcmd
 
-
-
-
 echo "* wikimedia_importance.tsv.gz"
 
 {
-      echo "COPY (SELECT * FROM wikimedia_importance LIMIT 0) TO STDOUT WITH DELIMITER E'\t' CSV HEADER" | \
+      # Prints the CSV header row
+      # language  type  title importance  wikidata_id
+      echo "COPY (SELECT * FROM wikimedia_importance LIMIT 0) TO STDOUT WITH DELIMITER E'\t' CSV HEADER" |
             psqlcmd
       echo "COPY (
                   SELECT w.*
                   FROM wikimedia_importance w
                   JOIN top_languages tl ON w.language = tl.language
-                  ORDER BY tl.size DESC, w.title
-            ) TO STDOUT" | \
+                  ORDER BY tl.size DESC, w.type, w.title
+            ) TO STDOUT" |
             psqlcmd
-} | pigz -9 > "$OUTPUT_PATH/wikimedia_importance.tsv.gz"
+} | pigz -9 >"$OUTPUT_PATH/wikimedia_importance.tsv.gz"
 
 # default is 600
 chmod 644 "$OUTPUT_PATH/wikimedia_importance.tsv.gz"
-
 
 du -h $OUTPUT_PATH/*
 # 265M  wikimedia_importance.tsv.gz
