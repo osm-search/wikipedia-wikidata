@@ -12,11 +12,11 @@ echo "====================================================================="
 echo "Convert Wikipedia language tables"
 echo "====================================================================="
 
-for LANG in "${LANGUAGES_ARRAY[@]}"
+for WIKILANG in "${LANGUAGES_ARRAY[@]}"
 do
-    mkdir -p "$CONVERTED_PATH/$LANG/"
+    mkdir -p "$CONVERTED_PATH/$WIKILANG/"
 
-    echo "[language $LANG] Page table SQL => CSV"
+    echo "[language $WIKILANG] Page table SQL => CSV"
     # https://www.mediawiki.org/wiki/Manual:Page_table
     #
     # CREATE TABLE `page` (
@@ -39,13 +39,13 @@ do
     #   output 200MB compressed
     # Output columns: page_id, page_title
 
-    unpigz -c $DOWNLOADED_PATH/$LANG/page.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/$WIKILANG/page.sql.gz | \
     bin/mysqldump_to_csv.py | \
     bin/filter_page.py | \
-    pigz -9 > $CONVERTED_PATH/$LANG/pages.csv.gz
+    pigz -9 > $CONVERTED_PATH/$WIKILANG/pages.csv.gz
 
 
-    echo "[language $LANG] linktarget table SQL => CSV"
+    echo "[language $WIKILANG] linktarget table SQL => CSV"
     # https://www.mediawiki.org/wiki/Manual:Linktarget_table
     #
     # CREATE TABLE `linktarget` (
@@ -59,14 +59,14 @@ do
     #   output 322MB compressed (30m rows)
     # Output columns: lt_id, lt_title
 
-    unpigz -c $DOWNLOADED_PATH/${LANG}/linktarget.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/${WIKILANG}/linktarget.sql.gz | \
     bin/mysqldump_to_csv.py | \
     bin/filter_redirect.py  | \
-    pigz -9 > $CONVERTED_PATH/$LANG/linktarget.csv.gz
+    pigz -9 > $CONVERTED_PATH/$WIKILANG/linktarget.csv.gz
 
 
 
-    echo "[language $LANG] Pagelinks table SQL => CSV"
+    echo "[language $WIKILANG] Pagelinks table SQL => CSV"
     # https://www.mediawiki.org/wiki/Manual:Pagelinks_table
     #
     # CREATE TABLE `pagelinks` (
@@ -80,13 +80,13 @@ do
     #   output 200MB compressed
     # Output columns: lt_title (from linktarget file), count (unique pl_from)
 
-    unpigz -c $DOWNLOADED_PATH/$LANG/pagelinks.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/$WIKILANG/pagelinks.sql.gz | \
     bin/mysqldump_to_csv.py | \
-    bin/filter_pagelinks.py $CONVERTED_PATH/$LANG/linktarget.csv.gz | \
-    pigz -9 > $CONVERTED_PATH/$LANG/pagelinks.csv.gz
+    bin/filter_pagelinks.py $CONVERTED_PATH/$WIKILANG/linktarget.csv.gz | \
+    pigz -9 > $CONVERTED_PATH/$WIKILANG/pagelinks.csv.gz
 
 
-    echo "[language $LANG] langlinks table SQL => CSV"
+    echo "[language $WIKILANG] langlinks table SQL => CSV"
     # https://www.mediawiki.org/wiki/Manual:Langlinks_table
     #
     # CREATE TABLE `langlinks` (
@@ -100,15 +100,15 @@ do
     #   input 400MB compressed (1.5GB uncompressed)
     #   output 310MB compressed (1.3GB uncompressed)
 
-    unpigz -c $DOWNLOADED_PATH/${LANG}/langlinks.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/${WIKILANG}/langlinks.sql.gz | \
     bin/mysqldump_to_csv.py | \
     bin/filter_langlinks.py | \
-    pigz -9 > $CONVERTED_PATH/$LANG/langlinks.csv.gz
+    pigz -9 > $CONVERTED_PATH/$WIKILANG/langlinks.csv.gz
 
 
 
 
-    echo "[language $LANG] redirect table SQL => CSV"
+    echo "[language $WIKILANG] redirect table SQL => CSV"
     # https://www.mediawiki.org/wiki/Manual:Redirect_table
     #
     # CREATE TABLE `redirect` (
@@ -124,10 +124,10 @@ do
     #   input 140MB compressed (530MB uncompressed)
     #   output 120MB compressed (300MB uncompressed)
 
-    unpigz -c $DOWNLOADED_PATH/$LANG/redirect.sql.gz | \
+    unpigz -c $DOWNLOADED_PATH/$WIKILANG/redirect.sql.gz | \
     bin/mysqldump_to_csv.py | \
     bin/filter_redirect.py | \
-    pigz -9 > $CONVERTED_PATH/$LANG/redirect.csv.gz
+    pigz -9 > $CONVERTED_PATH/$WIKILANG/redirect.csv.gz
 
-    du -h $CONVERTED_PATH/$LANG/*
+    du -h $CONVERTED_PATH/$WIKILANG/*
 done

@@ -18,13 +18,13 @@ echo "====================================================================="
 echo "Dropping intermediate wikipedia tables to conserve space"
 echo "====================================================================="
 
-for LANG in "${LANGUAGES_ARRAY[@]}"
+for WIKILANG in "${LANGUAGES_ARRAY[@]}"
 do
-    echo "DROP TABLE ${LANG}pagelinks;"     | psqlcmd
-    echo "DROP TABLE ${LANG}page;"          | psqlcmd
-    echo "DROP TABLE ${LANG}langlinks;"     | psqlcmd
-    echo "DROP TABLE ${LANG}redirect;"      | psqlcmd
-    echo "DROP TABLE ${LANG}pagelinkcount;" | psqlcmd
+    echo "DROP TABLE ${WIKILANG}pagelinks;"     | psqlcmd
+    echo "DROP TABLE ${WIKILANG}page;"          | psqlcmd
+    echo "DROP TABLE ${WIKILANG}langlinks;"     | psqlcmd
+    echo "DROP TABLE ${WIKILANG}redirect;"      | psqlcmd
+    echo "DROP TABLE ${WIKILANG}pagelinkcount;" | psqlcmd
 done
 
 
@@ -34,7 +34,7 @@ echo "====================================================================="
 
 echo "DROP TABLE wikidata_place_dump;" | psqlcmd
 echo "DROP TABLE geo_earth_primary;"   | psqlcmd
-for LANG in "${LANGUAGES_ARRAY[@]}"
+for WIKILANG in "${LANGUAGES_ARRAY[@]}"
 do
-    echo "DROP TABLE wikidata_${LANG}_pages;" | psqlcmd
+    echo "DROP TABLE wikidata_${WIKILANG}_pages;" | psqlcmd
 done
