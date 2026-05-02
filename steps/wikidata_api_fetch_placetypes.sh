@@ -3,6 +3,11 @@
 # set defaults
 : ${BUILDID:=latest}
 
+# "(node:1047880) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead."
+# wdtaxonomy (unmaintained since 2019) pulls in deps that use Node's deprecated
+# punycode module. Silence the DEP0040 warning. Maybe replace wdtaxonomy later
+export NODE_OPTIONS="--disable-warning=DEP0040"
+
 DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
 TEMP_PATH=$DOWNLOADED_PATH/tmp
 
@@ -17,7 +22,7 @@ echo "====================================================================="
 
 # We create a mapping of QID->place type QID
 # for example 'Q6922586;Q130003' (Mount Olympus Ski Area -> ski resort)
-# 
+#
 # Takes about 30 minutes for 300 place types.
 #
 # The input wikidata_place_types.txt has the format
@@ -66,11 +71,11 @@ mkdir -p $TEMP_PATH
 
 echo "Number of place types:"
 wc -l config/wikidata_place_types.txt
-echo -n > $DOWNLOADED_PATH/wikidata_place_dump.csv
+echo -n >$DOWNLOADED_PATH/wikidata_place_dump.csv
 
-while read PT_LINE ; do
-    QID=$(echo $PT_LINE | sed 's/;.*//' )
-    NAME=$(echo $PT_LINE | sed 's/^.*;//' )
+while read PT_LINE; do
+    QID=$(echo $PT_LINE | sed 's/;.*//')
+    NAME=$(echo $PT_LINE | sed 's/^.*;//')
 
     # Querying for place type Q205495 (petrol station)...
     echo "Querying for place type $QID ($NAME)..."
@@ -98,12 +103,12 @@ while read PT_LINE ; do
     # (instances). Subcategories have 'sites' value > 0
     #
 
-    wdtaxonomy $QID --instances --no-instancecount --no-labels --format tsv | \
-    cut  -f1-4 | \
-    grep -e "[[:space:]]0$" | \
-    cut -f2 | \
-    sort | \
-    awk -v qid=$QID '{print $0 ","qid}' > $TEMP_PATH/$QID.csv
+    wdtaxonomy $QID --instances --no-instancecount --no-labels --format tsv |
+        cut -f1-4 |
+        grep -e "[[:space:]]0$" |
+        cut -f2 |
+        sort |
+        awk -v qid=$QID '{print $0 ","qid}' >$TEMP_PATH/$QID.csv
     wc -l $TEMP_PATH/$QID.csv
 
     # output example:
@@ -114,9 +119,9 @@ while read PT_LINE ; do
     # Q992902,Q130003
     # Q995986,Q130003
 
-    cat $TEMP_PATH/$QID.csv >> $DOWNLOADED_PATH/wikidata_place_dump.csv
+    cat $TEMP_PATH/$QID.csv >>$DOWNLOADED_PATH/wikidata_place_dump.csv
     rm $TEMP_PATH/$QID.csv
-done < config/wikidata_place_types.txt
+done <config/wikidata_place_types.txt
 
 # Non-Q is less than 20, not sure what they mean
 #    L673595,Q4830453
@@ -124,9 +129,9 @@ done < config/wikidata_place_types.txt
 #    L162425-S2,Q40357
 # uniq saves 4% lines
 # 470MB compressed 72MB
-grep '^Q' $DOWNLOADED_PATH/wikidata_place_dump.csv | \
-uniq | \
-pigz -f -9 > $DOWNLOADED_PATH/wikidata_place_dump.csv.gz
+grep '^Q' $DOWNLOADED_PATH/wikidata_place_dump.csv |
+    uniq |
+    pigz -f -9 >$DOWNLOADED_PATH/wikidata_place_dump.csv.gz
 
 cp config/wikidata_place_type_levels.csv $DOWNLOADED_PATH
 # temp should be empty but if not then that should be fine, too
