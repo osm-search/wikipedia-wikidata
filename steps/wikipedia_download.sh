@@ -33,10 +33,10 @@ download() {
     du -h "$2" | cut -f1
 }
 
-for LANG in "${LANGUAGES_ARRAY[@]}"; do
-    echo "Language: $LANG"
+for WIKILANG in "${LANGUAGES_ARRAY[@]}"; do
+    echo "Language: $WIKILANG"
 
-    mkdir -p "$DOWNLOADED_PATH/$LANG"
+    mkdir -p "$DOWNLOADED_PATH/$WIKILANG"
 
     # English is the largest
     # 2.1G  downloaded/en/page.sql.gz
@@ -54,14 +54,14 @@ for LANG in "${LANGUAGES_ARRAY[@]}"; do
 
     for FN in page.sql.gz pagelinks.sql.gz langlinks.sql.gz linktarget.sql.gz redirect.sql.gz; do
 
-        download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/${LANG}wiki-$WIKIPEDIA_DATE-$FN "$DOWNLOADED_PATH/$LANG/$FN"
-        download https://$WIKIMEDIA_HOST/${LANG}wiki/$WIKIPEDIA_DATE/md5sums-${LANG}wiki-$WIKIPEDIA_DATE-$FN.txt "$DOWNLOADED_PATH/$LANG/$FN.md5"
+        download https://$WIKIMEDIA_HOST/${WIKILANG}wiki/$WIKIPEDIA_DATE/${WIKILANG}wiki-$WIKIPEDIA_DATE-$FN "$DOWNLOADED_PATH/$WIKILANG/$FN"
+        download https://$WIKIMEDIA_HOST/${WIKILANG}wiki/$WIKIPEDIA_DATE/md5sums-${WIKILANG}wiki-$WIKIPEDIA_DATE-$FN.txt "$DOWNLOADED_PATH/$WIKILANG/$FN.md5"
 
-        EXPECTED_MD5=$(cat "$DOWNLOADED_PATH/$LANG/$FN.md5" | cut -d\  -f1)
-        CALCULATED_MD5=$(md5sum "$DOWNLOADED_PATH/$LANG/$FN" | cut -d\  -f1)
+        EXPECTED_MD5=$(cat "$DOWNLOADED_PATH/$WIKILANG/$FN.md5" | cut -d\  -f1)
+        CALCULATED_MD5=$(md5sum "$DOWNLOADED_PATH/$WIKILANG/$FN" | cut -d\  -f1)
 
         if [[ "$EXPECTED_MD5" != "$CALCULATED_MD5" ]]; then
-            echo "$FN for language $LANG - md5 checksum doesn't match, download broken"
+            echo "$FN for language $WIKILANG - md5 checksum doesn't match, download broken"
             exit 1
         fi
     done

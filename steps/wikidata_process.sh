@@ -90,10 +90,10 @@ echo "CREATE TABLE wikidata_pages (
         language      text
       );" | psqlcmd
 
-for LANG in "${LANGUAGES_ARRAY[@]}"
+for WIKILANG in "${LANGUAGES_ARRAY[@]}"
 do
-   echo "DROP TABLE IF EXISTS wikidata_${LANG}_pages;" | psqlcmd
-   echo "CREATE TABLE wikidata_${LANG}_pages AS
+   echo "DROP TABLE IF EXISTS wikidata_${WIKILANG}_pages;" | psqlcmd
+   echo "CREATE TABLE wikidata_${WIKILANG}_pages AS
          SELECT wikidata_places.item,
                 wikidata_places.instance_of,
                 wikidata_places.lat,
@@ -102,7 +102,7 @@ do
          FROM wikidata_places
          LEFT JOIN wb_items_per_site
                 ON (CAST (( LTRIM(wikidata_places.item, 'Q')) AS INTEGER) = wb_items_per_site.ips_item_id)
-         WHERE ips_site_id = '${LANG}wiki'
+         WHERE ips_site_id = '${WIKILANG}wiki'
          ORDER BY wikidata_places.item
          ;" | psqlcmd
 
@@ -112,8 +112,8 @@ do
                 lat,
                 lon,
                 REPLACE(ips_site_page, ' ', '_') as wp_page_title,
-                '${LANG}'
-         FROM wikidata_${LANG}_pages
+                '${WIKILANG}'
+         FROM wikidata_${WIKILANG}_pages
          ;" | psqlcmd
 done
 
