@@ -1,10 +1,34 @@
 #!/bin/bash
 
 #
-# Prints a YYYYMMDD date of the latest available date on
-# https://wikidata.aerotechnet.com/enwiki/
-# We do some additional checks if the dumps are complete, too
+# Prints a YYYYMMDD date of the latest available dump on the configured
+# wikimedia mirror.
 #
+# Two checks:
+#
+#   1. zhwiki and wikidatawiki dumpruninfo.json report all required tables
+#      as "done".
+#      But that just indicated the dump completed, not that the mirror
+#      server downloaded all files. Using the last file alphabetically
+#      is a good indication, but there's no guarantee which files get
+#      downloaded by the mirror server first or last.
+#
+#   2. The .sql.gz files exist on the mirror (with non-zero size)
+#      This causes many HTTP requests (curl -I only) but avoid headaches
+#      later.
+
+: ${WIKIMEDIA_HOST:=wikidata.aerotechnet.com}
+
+# You can overwrite LANGUAGEs, e.g. when testing or for CI.
+if [ -z "$LANGUAGES" ]; then
+    if [ -f config/languages.txt ]; then
+        LANGUAGES=$(grep -v '^#' config/languages.txt | tr "\n" "," | sed 's/,$//')
+    else
+        echo "ERROR: LANGUAGES not set and config/languages.txt not found" >&2
+        exit 2
+    fi
+fi
+LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
 debug() {
     # Comment out the following line to print debug information
@@ -26,6 +50,46 @@ set_date_to_first_of_month() {
     fi
 }
 
+# Returns 0 if URL responds 2xx with non-zero Content-Length.
+mirror_file_present() {
+    URL=$1
+    HEADERS=$(curl -sI --fail --max-time 15 "$URL" 2>/dev/null)
+    if [[ $? != 0 ]]; then
+        return 1
+    fi
+    SIZE=$(echo "$HEADERS" | grep -i '^content-length:' | tail -1 | awk '{print $2}' | tr -d '\r')
+    if [ -z "$SIZE" ] || [ "$SIZE" = "0" ]; then
+        return 1
+    fi
+    return 0
+}
+
+# Checks that all required table jobs in $WIKI/$CHECK_DATE/dumpruninfo.json
+# are status=done. Returns 1 on any missing/not-done table, or fetch failure.
+check_dumprun_done() {
+    WIKI=$1
+    REQUIRED_FILES=$2
+    DUMP_RUN_INFO_URL="https://$WIKIMEDIA_HOST/$WIKI/$CHECK_DATE/dumpruninfo.json"
+    debug $DUMP_RUN_INFO_URL
+    DUMP_RUN_INFO=$(curl -s --fail "$DUMP_RUN_INFO_URL")
+    if [[ $? != 0 ]]; then
+        debug "fetching from URL $DUMP_RUN_INFO_URL failed"
+        return 1
+    fi
+
+    for FN in $REQUIRED_FILES; do
+        TABLENAME=${FN//_/}table # redirect => redirecttable, wb_items_per_site => wbitemspersitetable
+        debug "checking status for table $TABLENAME"
+        STATUS=$(echo "$DUMP_RUN_INFO" | TABLE=$TABLENAME jq -r '.jobs[env.TABLE].status')
+        debug "  status: $STATUS"
+        if [ "$STATUS" != "done" ]; then
+            debug "$WIKI/$CHECK_DATE: $TABLENAME not done"
+            return 1
+        fi
+    done
+    return 0
+}
+
 check_all_files_ready() {
     CHECK_DATE=$1
     debug "check_all_files_ready for $CHECK_DATE"
@@ -36,89 +100,42 @@ check_all_files_ready() {
     # The dumpruninfo.json files have this format:
     # {
     #   "jobs": {
-    #     "imagetable": {
-    #       "status": "done",
-    #       "updated": "2023-02-01 08:27:30"
-    #     },
-    #     "imagelinkstable": {
-    #       "status": "done",
-    #       "updated": "2023-02-01 09:18:03"
-    #     },
-    #     "geotagstable": {
-    #       "status": "done",
-    #       "updated": "2023-02-01 10:01:50"
-    #     },
+    #     "imagetable":      { "status": "done", "updated": "2023-02-01 08:27:30" },
+    #     "imagelinkstable": { "status": "done", "updated": "2023-02-01 09:18:03" },
+    #     "geotagstable":    { "status": "done", "updated": "2023-02-01 10:01:50" },
     #     [...]
-    #
 
-    ANY_FILE_MISSING=0
+    # 1. Upstream dump completion. zhwiki is usually the last large wiki to
+    #    finish; wikidatawiki has its own schedule.
+    check_dumprun_done zhwiki "page pagelinks langlinks linktarget redirect" || return 1
+    check_dumprun_done wikidatawiki "geo_tags page wb_items_per_site" || return 1
 
-    ##
-    ## 1. Chinese (ZH) Wikipedia
-    ## usually the last to be dumped
-    ##
-    # from wikipedia_download.sh
-    WIKIPEDIA_REQUIRED_FILES="page pagelinks langlinks linktarget redirect"
-    DUMP_RUN_INFO_URL="https://wikidata.aerotechnet.com/zhwiki/$CHECK_DATE/dumpruninfo.json"
-    debug $DUMP_RUN_INFO_URL
-    DUMP_RUN_INFO=$(curl -s --fail "$DUMP_RUN_INFO_URL")
-
-    if [[ $? != 0 ]]; then
-        debug "fetching from URL $DUMP_RUN_INFO_URL failed"
-        return 1
-    fi
-
-    for FN in $WIKIPEDIA_REQUIRED_FILES; do
-        TABLENAME=${FN//_/}table # redirect => redirecttable
-        debug "checking status for table $TABLENAME"
-
-        STATUS=$(echo "$DUMP_RUN_INFO" | TABLE=$TABLENAME jq -r '.jobs[env.TABLE].status')
-        debug "  status: $STATUS"
-
-        if [ "$STATUS" != "done" ]; then
-            debug "$TABLENAME not ready yet"
-            ANY_FILE_MISSING=1
+    # 2. Mirror sync. Do the file really exist? dumpruninfo.json only contains a list
+    #    of dumps on the dump server, not yet the mirror.
+    for WIKILANG in "${LANGUAGES_ARRAY[@]}"; do
+        URL="https://$WIKIMEDIA_HOST/${WIKILANG}wiki/$CHECK_DATE/${WIKILANG}wiki-$CHECK_DATE-page.sql.gz"
+        if ! mirror_file_present "$URL"; then
+            debug "mirror missing or empty: $URL"
+            return 1
         fi
     done
 
-    ##
-    ## 2. Wikidata
-    ##
-    # from wikidata_download.sh
-    WIKIDATA_REQUIRED_FILES="geo_tags page wb_items_per_site"
-
-    DUMP_RUN_INFO_URL="https://wikidata.aerotechnet.com/wikidatawiki/$CHECK_DATE/dumpruninfo.json"
-    debug $DUMP_RUN_INFO_URL
-    DUMP_RUN_INFO=$(curl -s --fail "$DUMP_RUN_INFO_URL")
-
-    if [[ $? != 0 ]]; then
-        debug "fetching from URL $DUMP_RUN_INFO_URL failed"
-        return 1
-    fi
-
-    for FN in $WIKIDATA_REQUIRED_FILES; do
-        TABLENAME=${FN//_/}table # wb_items_per_site => wbitemspersitetable
-        debug "checking status for table $TABLENAME"
-
-        STATUS=$(echo "$DUMP_RUN_INFO" | TABLE=$TABLENAME jq -r '.jobs[env.TABLE].status')
-        debug "  status: $STATUS"
-
-        if [ "$STATUS" != "done" ]; then
-            debug "$TABLENAME not ready yet"
-            ANY_FILE_MISSING=1
+    # And the actual wikidata dump files we'll fetch (no per-language fan-out).
+    for FN in geo_tags page wb_items_per_site; do
+        URL="https://$WIKIMEDIA_HOST/wikidatawiki/$CHECK_DATE/wikidatawiki-$CHECK_DATE-$FN.sql.gz"
+        if ! mirror_file_present "$URL"; then
+            debug "mirror missing or empty: $URL"
+            return 1
         fi
     done
 
-    return $ANY_FILE_MISSING
+    return 0
 }
 
 # Find dates in directory names. We need to parse HTML.
-#
-CONTENT=$(curl -s -S --fail 'https://wikidata.aerotechnet.com/enwiki/')
+CONTENT=$(curl -s -S --fail "https://$WIKIMEDIA_HOST/enwiki/")
 for DATE in $(echo $CONTENT | grep -oE '20[0-9]{6}' | sort -nr); do
-    check_all_files_ready $DATE
-
-    if [ $? == 0 ]; then
+    if check_all_files_ready $DATE; then
         echo "$DATE"
         exit 0
     fi

@@ -7,12 +7,17 @@
 # Example to add timestamps and create a logfile:
 # time ./complete_run.sh 2>&1 | ts -s "[%H:%M:%S]" | tee "$(date +"%Y%m%d").$$.log"
 
-
 ./install_dependencies.sh
 
-# checks https://mirror.clarkson.edu/wikimedia/enwiki/
-#    and https://mirror.clarkson.edu/wikimedia/wikidatawiki/
+# checks https://wikidata.aerotechnet.com/enwiki/
+#    and https://wikidata.aerotechnet.com/wikidatawiki/
 LATEST_DATE=$(./steps/latest_available_data.sh) # yyyymmdd
+
+# If the mirror is outdated or missing files then LATEST_DATE can be empty.
+if [ -z "$LATEST_DATE" ]; then
+    echo "No complete wikimedia dump available on mirror yet. Skipping run."
+    exit 0
+fi
 
 export WIKIPEDIA_DATE=$LATEST_DATE
 export WIKIDATA_DATE=$LATEST_DATE
