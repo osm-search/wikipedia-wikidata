@@ -19,6 +19,14 @@
 
 : ${WIKIMEDIA_HOST:=wikidata.aerotechnet.com}
 
+USER_AGENT='github/osm-search/wikipedia-wikidata'
+
+# Tables fetched by the download steps. Keep in sync with
+#   steps/wikipedia_download.sh
+#   steps/wikidata_download.sh
+WIKIPEDIA_TABLES="page pagelinks langlinks linktarget redirect"
+WIKIDATA_TABLES="geo_tags page wb_items_per_site"
+
 # You can overwrite LANGUAGEs, e.g. when testing or for CI.
 if [ -z "$LANGUAGES" ]; then
     if [ -f config/languages.txt ]; then
@@ -53,7 +61,7 @@ set_date_to_first_of_month() {
 # Returns 0 if URL responds 2xx with non-zero Content-Length.
 mirror_file_present() {
     URL=$1
-    HEADERS=$(curl -sI --fail --max-time 15 "$URL" 2>/dev/null)
+    HEADERS=$(curl -sI --fail --max-time 15 -A "$USER_AGENT" "$URL" 2>/dev/null)
     if [[ $? != 0 ]]; then
         return 1
     fi
@@ -71,7 +79,7 @@ check_dumprun_done() {
     REQUIRED_FILES=$2
     DUMP_RUN_INFO_URL="https://$WIKIMEDIA_HOST/$WIKI/$CHECK_DATE/dumpruninfo.json"
     debug $DUMP_RUN_INFO_URL
-    DUMP_RUN_INFO=$(curl -s --fail "$DUMP_RUN_INFO_URL")
+    DUMP_RUN_INFO=$(curl -s --fail -A "$USER_AGENT" "$DUMP_RUN_INFO_URL")
     if [[ $? != 0 ]]; then
         debug "fetching from URL $DUMP_RUN_INFO_URL failed"
         return 1
@@ -107,24 +115,40 @@ check_all_files_ready() {
 
     # 1. Upstream dump completion. zhwiki is usually the last large wiki to
     #    finish; wikidatawiki has its own schedule.
-    check_dumprun_done zhwiki "page pagelinks langlinks linktarget redirect" || return 1
-    check_dumprun_done wikidatawiki "geo_tags page wb_items_per_site" || return 1
+    check_dumprun_done zhwiki "$WIKIPEDIA_TABLES" || return 1
+    check_dumprun_done wikidatawiki "$WIKIDATA_TABLES" || return 1
 
-    # 2. Mirror sync. Do the file really exist? dumpruninfo.json only contains a list
-    #    of dumps on the dump server, not yet the mirror.
+    # 2. Mirror sync. Do the files really exist? dumpruninfo.json only contains a
+    #    list of dumps on the dump server, not yet the mirror.
+    #    The mirror syncs a dump directory as a unit, and the small md5sums .txt
+    #    files arrive after the .sql.gz data files (an unsynced/empty md5sums .txt
+    #    is what broke a previous run). So per language we HEAD-check the "page"
+    #    dump AND its md5sums .txt as a canary for the whole directory, rather than
+    #    every table, to keep the number of requests reasonable.
     for WIKILANG in "${LANGUAGES_ARRAY[@]}"; do
-        URL="https://$WIKIMEDIA_HOST/${WIKILANG}wiki/$CHECK_DATE/${WIKILANG}wiki-$CHECK_DATE-page.sql.gz"
-        if ! mirror_file_present "$URL"; then
-            debug "mirror missing or empty: $URL"
+        DUMP_URL="https://$WIKIMEDIA_HOST/${WIKILANG}wiki/$CHECK_DATE/${WIKILANG}wiki-$CHECK_DATE-page.sql.gz"
+        MD5_URL="https://$WIKIMEDIA_HOST/${WIKILANG}wiki/$CHECK_DATE/md5sums-${WIKILANG}wiki-$CHECK_DATE-page.sql.gz.txt"
+        if ! mirror_file_present "$DUMP_URL"; then
+            debug "mirror missing or empty: $DUMP_URL"
+            return 1
+        fi
+        if ! mirror_file_present "$MD5_URL"; then
+            debug "mirror missing or empty: $MD5_URL"
             return 1
         fi
     done
 
-    # And the actual wikidata dump files we'll fetch (no per-language fan-out).
-    for FN in geo_tags page wb_items_per_site; do
-        URL="https://$WIKIMEDIA_HOST/wikidatawiki/$CHECK_DATE/wikidatawiki-$CHECK_DATE-$FN.sql.gz"
-        if ! mirror_file_present "$URL"; then
-            debug "mirror missing or empty: $URL"
+    # The wikidata dump files we'll fetch (no per-language fan-out, so cheap to
+    # check every dump and its md5sums .txt).
+    for FN in $WIKIDATA_TABLES; do
+        DUMP_URL="https://$WIKIMEDIA_HOST/wikidatawiki/$CHECK_DATE/wikidatawiki-$CHECK_DATE-$FN.sql.gz"
+        MD5_URL="https://$WIKIMEDIA_HOST/wikidatawiki/$CHECK_DATE/md5sums-wikidatawiki-$CHECK_DATE-$FN.sql.gz.txt"
+        if ! mirror_file_present "$DUMP_URL"; then
+            debug "mirror missing or empty: $DUMP_URL"
+            return 1
+        fi
+        if ! mirror_file_present "$MD5_URL"; then
+            debug "mirror missing or empty: $MD5_URL"
             return 1
         fi
     done
@@ -133,7 +157,7 @@ check_all_files_ready() {
 }
 
 # Find dates in directory names. We need to parse HTML.
-CONTENT=$(curl -s -S --fail "https://$WIKIMEDIA_HOST/enwiki/")
+CONTENT=$(curl -s -S --fail -A "$USER_AGENT" "https://$WIKIMEDIA_HOST/enwiki/")
 for DATE in $(echo $CONTENT | grep -oE '20[0-9]{6}' | sort -nr); do
     if check_all_files_ready $DATE; then
         echo "$DATE"

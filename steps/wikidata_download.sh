@@ -15,6 +15,8 @@ echo "====================================================================="
 # Retry a few times before giving up.
 : ${DOWNLOAD_MAX_ATTEMPTS:=5}
 : ${DOWNLOAD_RETRY_WAIT:=3600} # 1 hour, to give the mirror time to sync
+# Sent on every request; keep in sync with steps/latest_available_data.sh
+USER_AGENT='github/osm-search/wikipedia-wikidata'
 
 DOWNLOADED_PATH="$BUILDID/downloaded/wikidata"
 mkdir -p $DOWNLOADED_PATH
@@ -25,7 +27,7 @@ download() {
         echo "file $2 already exists, skipping"
         return
     fi
-    header='--header=User-Agent:Osm-search-Bot/1(https://github.com/osm-search/wikipedia-wikidata)'
+    header="--header=User-Agent:$USER_AGENT"
 
     for attempt in $(seq 1 "$DOWNLOAD_MAX_ATTEMPTS"); do
         wget -O "$2" --quiet $header --no-clobber --tries=3 "$1"
