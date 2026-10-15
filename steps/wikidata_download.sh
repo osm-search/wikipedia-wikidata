@@ -8,8 +8,8 @@ echo "====================================================================="
 : ${BUILDID:=latest}
 # List of mirrors https://dumps.wikimedia.org/mirrors.html
 # Download using main dumps.wikimedia.org: 60 minutes, mirror: 20 minutes
-: ${WIKIMEDIA_HOST:=wikidata.aerotechnet.com}
-# See list on https://wikidata.aerotechnet.com/wikidatawiki/
+: ${WIKIMEDIA_HOST:=ftp.acc.umu.se/mirror/wikimedia.org/dumps}
+# See list on https://ftp.acc.umu.se/mirror/wikimedia.org/dumps/wikidatawiki/
 : ${WIKIDATA_DATE:=20220701}
 # An empty download usually means the mirror has not synced that file yet.
 # Retry a few times before giving up.
@@ -49,8 +49,8 @@ download() {
 
 for FN in geo_tags.sql.gz page.sql.gz wb_items_per_site.sql.gz; do
 
-    # https://wikidata.aerotechnet.com/wikidatawiki/20250501/wikidatawiki-20250501-geo_tags.sql.gz
-    # https://wikidata.aerotechnet.com/wikidatawiki/20250501/md5sums-wikidatawiki-20250501-geo_tags.sql.gz.txt
+    # https://ftp.acc.umu.se/mirror/wikimedia.org/dumps/wikidatawiki/20250501/wikidatawiki-20250501-geo_tags.sql.gz
+    # https://ftp.acc.umu.se/mirror/wikimedia.org/dumps/wikidatawiki/20250501/md5sums-wikidatawiki-20250501-geo_tags.sql.gz.txt
     download https://$WIKIMEDIA_HOST/wikidatawiki/$WIKIDATA_DATE/wikidatawiki-$WIKIDATA_DATE-$FN "$DOWNLOADED_PATH/$FN"
     download https://$WIKIMEDIA_HOST/wikidatawiki/$WIKIDATA_DATE/md5sums-wikidatawiki-$WIKIDATA_DATE-$FN.txt "$DOWNLOADED_PATH/$FN.md5"
 

@@ -11,8 +11,8 @@ echo "====================================================================="
 LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 # List of mirrors https://dumps.wikimedia.org/mirrors.html
 # Download using main dumps.wikimedia.org: 150 minutes, mirror: 40 minutes
-: ${WIKIMEDIA_HOST:=wikidata.aerotechnet.com}
-# See list on https://wikidata.aerotechnet.com/enwiki/
+: ${WIKIMEDIA_HOST:=ftp.acc.umu.se/mirror/wikimedia.org/dumps}
+# See list on https://ftp.acc.umu.se/mirror/wikimedia.org/dumps/enwiki/
 : ${WIKIPEDIA_DATE:=20220620}
 # An empty download usually means the mirror has not synced that file yet.
 # Retry a few times before giving up.

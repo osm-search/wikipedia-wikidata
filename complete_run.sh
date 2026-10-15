@@ -25,8 +25,8 @@ run_step() {
 
 run_step ./install_dependencies.sh
 
-# checks https://wikidata.aerotechnet.com/enwiki/
-#    and https://wikidata.aerotechnet.com/wikidatawiki/
+# checks https://ftp.acc.umu.se/mirror/wikimedia.org/dumps/enwiki/
+#    and https://ftp.acc.umu.se/mirror/wikimedia.org/dumps/wikidatawiki/
 LATEST_DATE=$(./steps/latest_available_data.sh) # yyyymmdd
 
 # If the mirror is outdated or missing files then LATEST_DATE can be empty.

@@ -17,7 +17,9 @@
 #      This causes many HTTP requests (curl -I only) but avoid headaches
 #      later.
 
-: ${WIKIMEDIA_HOST:=wikidata.aerotechnet.com}
+# Mirror host, optionally followed by a path. List of mirrors
+# https://dumps.wikimedia.org/mirrors.html
+: ${WIKIMEDIA_HOST:=ftp.acc.umu.se/mirror/wikimedia.org/dumps}
 
 USER_AGENT='github/osm-search/wikipedia-wikidata'
 
