@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Abort on the first failing command, including psqlcmd
+set -eo pipefail
+
 # set defaults
 : ${BUILDID:=latest}
 : ${DATABASE_NAME:=wikiprocessingdb}
@@ -7,9 +10,12 @@
 : ${LANGUAGES:=bar,cy}
 LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
+# ON_ERROR_STOP: exit non-zero on SQL errors (psql's default is to exit 0).
+# grep -v exits 1 when it prints nothing, which is the normal case with
+# --quiet, so that must not count as a failure.
 psqlcmd() {
-     psql --quiet $DATABASE_NAME |& \
-     grep -v 'does not exist, skipping'
+     psql --quiet -v ON_ERROR_STOP=1 $DATABASE_NAME |& \
+     { grep -v 'does not exist, skipping' || true; }
 }
 
 
@@ -36,9 +42,9 @@ echo "CREATE TABLE geo_earth_wikidata AS
       ;" | psqlcmd
 
 echo "ALTER TABLE wikidata_place_dump
-      ADD COLUMN ont_level integer,
-      ADD COLUMN lat numeric(11,8),
-      ADD COLUMN lon numeric(11,8)
+      ADD COLUMN IF NOT EXISTS ont_level integer,
+      ADD COLUMN IF NOT EXISTS lat numeric(11,8),
+      ADD COLUMN IF NOT EXISTS lon numeric(11,8)
       ;" | psqlcmd
 
 echo "UPDATE wikidata_place_dump

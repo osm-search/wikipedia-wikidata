@@ -17,6 +17,10 @@ jobs:
       run: ./install_dependencies.sh
     - name: Create database
       run: createdb wikiprocessingdb
+    # The import steps use COPY ... FROM PROGRAM, which runs as the postgres
+    # user. It needs to reach the CSV files below $HOME (mode 750 on runners).
+    - name: Allow postgres to read the workspace
+      run: chmod o+x "$HOME"
     - name: Build for languages Limburgish (li), Bavarian (bar)
       run: |
         LATEST_DATE=$(./steps/latest_available_data.sh)
