@@ -12,6 +12,13 @@ if [[ "$OUT" != "4" ]]; then
     exit 1
 fi
 
+# test1: one-line INSERT statements, test2: one row per line (since 20261001).
+# Both need to give the same output.
+cat tests/mysqldump_to_csv.test1.txt | bin/mysqldump_to_csv.py > out.txt
+diff --brief out.txt tests/mysqldump_to_csv.test1expected.txt || exit 1
+cat tests/mysqldump_to_csv.test2.txt | bin/mysqldump_to_csv.py > out.txt
+diff --brief out.txt tests/mysqldump_to_csv.test1expected.txt || exit 1
+
 cat tests/linktargets.txt | gzip > tests/linktargets.txt.gz
 cat tests/filter_pagelinks.test1.txt | bin/filter_pagelinks.py tests/linktargets.txt.gz > out.txt
 diff --brief out.txt tests/filter_pagelinks.test1expected.txt || exit 1

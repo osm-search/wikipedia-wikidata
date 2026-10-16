@@ -1,0 +1,27 @@
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19  Distrib 10.11.18-MariaDB, for debian-linux-gnu (x86_64)
+--
+-- Host: dbstore1007.eqiad.wmnet    Database: kkwiki
+-- ------------------------------------------------------
+
+DROP TABLE IF EXISTS `redirect`;
+CREATE TABLE `redirect` (
+  `rd_from` int(8) unsigned NOT NULL DEFAULT 0,
+  `rd_namespace` int(11) NOT NULL DEFAULT 0,
+  `rd_title` varbinary(255) NOT NULL DEFAULT '',
+  `rd_interwiki` varbinary(32) DEFAULT NULL,
+  `rd_fragment` varbinary(255) DEFAULT NULL,
+  PRIMARY KEY (`rd_from`)
+) ENGINE=InnoDB DEFAULT CHARSET=binary ROW_FORMAT=COMPRESSED;
+
+/*!40000 ALTER TABLE `redirect` DISABLE KEYS */;
+INSERT INTO `redirect` VALUES
+(1645,0,'Қазақстан','',''),
+(1698,0,'O\'Brien',NULL,''),
+(1700,0,'Foo,_Bar','','Section');
+INSERT INTO `redirect` VALUES
+(169267,0,'Penny_(United_States_coin)','',''),
+(169270,10,'(Album)','','');
+/*!40000 ALTER TABLE `redirect` ENABLE KEYS */;
+
+-- Dump completed on 2026-10-01 16:09:31
