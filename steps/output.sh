@@ -6,6 +6,9 @@ set -eo pipefail
 # set defaults
 : ${BUILDID:=latest}
 : ${DATABASE_NAME:=wikiprocessingdb}
+# Languages as comma-separated string, e.g. 'en,fr,de'
+: ${LANGUAGES:=bar,cy}
+LANGUAGES_ARRAY=($(echo $LANGUAGES | tr ',' ' '))
 
 OUTPUT_PATH="$BUILDID/output"
 mkdir -p "$OUTPUT_PATH"
@@ -113,6 +116,18 @@ echo "CREATE TABLE top_languages AS
       GROUP BY language
       ORDER BY size DESC
       ;" | psqlcmd
+
+echo "* check that every language has rows"
+# A build that parsed no input (e.g. after the dump format change in 20261001)
+# would otherwise write a file containing only the header row.
+LANGUAGES_WITH_ROWS=$(echo "SELECT language FROM top_languages;" | \
+      psql --quiet -tA -v ON_ERROR_STOP=1 $DATABASE_NAME)
+for WIKILANG in "${LANGUAGES_ARRAY[@]}"; do
+      if ! grep -qx "$WIKILANG" <<< "$LANGUAGES_WITH_ROWS"; then
+            echo "ERROR: no rows for language '$WIKILANG' in wikimedia_importance"
+            exit 1
+      fi
+done
 
 echo "* wikimedia_importance.tsv.gz"
 

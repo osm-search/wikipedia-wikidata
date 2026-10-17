@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Abort on the first failing command. pipefail: a failing parser or filter
+# in the middle of a pipeline must not be hidden by pigz succeeding.
+set -eo pipefail
+
 # set defaults
 : ${BUILDID:=latest}
 : ${LANGUAGES:=bar,cy}

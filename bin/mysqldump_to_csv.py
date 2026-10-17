@@ -26,6 +26,27 @@ def get_values(line):
     return line.partition('` VALUES ')[2]
 
 
+def read_multiline_values(lines):
+    """
+    Newer dumps (MariaDB dump 10.11, since the 20261001 dump) put each row
+    of an INSERT statement on its own line:
+
+        INSERT INTO `redirect` VALUES
+        (1645,0,'Қазақстан','',''),
+        (1698,0,'Ақтау','','');
+
+    Join the rows until the end of the statement. The result is the same
+    as the values part of the older one-line format.
+    """
+    rows = []
+    for line in lines:
+        line = line.rstrip('\n')
+        rows.append(line)
+        if line.endswith(';'):
+            break
+    return ''.join(rows)
+
+
 def values_sanity_check(values):
     """
     Ensures that values from the INSERT statement meet basic checks.
@@ -111,6 +132,8 @@ def main():
                 # Look for an INSERT statement and parse it.
                 if is_insert(line):
                     values = get_values(line)
+                    if not values.strip():
+                        values = read_multiline_values(file)
                     if values_sanity_check(values):
                         parse_values(values, sys.stdout)
     except KeyboardInterrupt:
